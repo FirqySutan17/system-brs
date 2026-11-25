@@ -1,671 +1,1242 @@
-<div class="container-fluid dashboard-modern">
 
-    <?php
-    /*
-     * STATIC DEMO DASHBOARD
-     * Seluruh data di bawah ini adalah dummy.
-     * Tidak mengambil data dari database maupun session.
-     */
-    $summary = [
-        'properties' => 120,
-        'available'  => 85,
-        'featured'   => 12,
-        'categories' => 8
-    ];
+<?php
+$full_name = $this->session->userdata('full_name') ?: 'Administrator';
+$first_name = explode(' ', trim($full_name))[0];
 
-    $recent_properties = [
-        [
-            'title'         => 'Commercial Office Building',
-            'category_name' => 'Commercial',
-            'city'          => 'Jakarta',
-            'province'      => 'DKI Jakarta',
-            'asset_class'   => 'Office Building',
-            'status'        => 'Available',
-            'featured'      => true,
-            'thumbnail'     => 'assets/frontend/img/property/default.jpg',
-            'slug'          => '#'
-        ],
-        [
-            'title'         => 'Premium Warehouse',
-            'category_name' => 'Industrial',
-            'city'          => 'Bekasi',
-            'province'      => 'West Java',
-            'asset_class'   => 'Warehouse',
-            'status'        => 'Available',
-            'featured'      => false,
-            'thumbnail'     => 'assets/frontend/img/property/default.jpg',
-            'slug'          => '#'
-        ],
-        [
-            'title'         => 'Strategic Land Property',
-            'category_name' => 'Land',
-            'city'          => 'Tangerang',
-            'province'      => 'Banten',
-            'asset_class'   => 'Land Asset',
-            'status'        => 'Occupied',
-            'featured'      => true,
-            'thumbnail'     => 'assets/frontend/img/property/default.jpg',
-            'slug'          => '#'
-        ]
-    ];
-    ?>
+$kpis = [
+    [
+        'label' => 'Active Farms',
+        'value' => '24',
+        'change' => '+2 this month',
+        'icon' => 'bi-house-door',
+        'color' => 'blue'
+    ],
+    [
+        'label' => 'Active Flocks',
+        'value' => '86',
+        'change' => 'Across all farms',
+        'icon' => 'bi-collection',
+        'color' => 'purple'
+    ],
+    [
+        'label' => 'Total Population',
+        'value' => '1.28M',
+        'change' => '+8.4% vs last month',
+        'icon' => 'bi-feather',
+        'color' => 'green'
+    ],
+    [
+        'label' => 'Mortality Rate',
+        'value' => '2.14%',
+        'change' => '0.18% lower than target',
+        'icon' => 'bi-activity',
+        'color' => 'orange'
+    ]
+];
 
-    <style>
-        .dashboard-modern {
-            padding: 28px;
-            min-height: calc(100vh - 70px);
-        }
+$flock_status = [
+    [
+        'label' => 'Active',
+        'value' => 86,
+        'percentage' => 72,
+        'color' => '#3976AD'
+    ],
+    [
+        'label' => 'Preparing',
+        'value' => 18,
+        'percentage' => 15,
+        'color' => '#E5A23B'
+    ],
+    [
+        'label' => 'Harvest',
+        'value' => 10,
+        'percentage' => 8,
+        'color' => '#269B70'
+    ],
+    [
+        'label' => 'Completed',
+        'value' => 6,
+        'percentage' => 5,
+        'color' => '#94A3B8'
+    ]
+];
 
-        .dashboard-welcome {
-            position: relative;
-            overflow: hidden;
-            background:
-                radial-gradient(circle at 90% 20%, rgba(245,154,35,.18), transparent 30%),
-                linear-gradient(135deg, #111111 0%, #292017 100%);
-            border: 1px solid rgba(245,154,35,.16);
-            border-radius: 22px;
-            padding: 30px 34px;
-            margin-bottom: 24px;
-            color: #fff;
-            box-shadow: 0 15px 40px rgba(17,17,17,.12);
-        }
+$flocks = [
+    [
+        'farm' => 'Farm Cibinong',
+        'flock' => 'FLK-2026-001',
+        'age' => 28,
+        'population' => 24500,
+        'mortality' => '1.82%',
+        'status' => 'Active'
+    ],
+    [
+        'farm' => 'Farm Sukabumi',
+        'flock' => 'FLK-2026-002',
+        'age' => 24,
+        'population' => 22000,
+        'mortality' => '2.10%',
+        'status' => 'Active'
+    ],
+    [
+        'farm' => 'Farm Bandung',
+        'flock' => 'FLK-2026-003',
+        'age' => 32,
+        'population' => 18500,
+        'mortality' => '2.65%',
+        'status' => 'Harvest'
+    ],
+    [
+        'farm' => 'Farm Karawang',
+        'flock' => 'FLK-2026-004',
+        'age' => 12,
+        'population' => 26000,
+        'mortality' => '0.95%',
+        'status' => 'Active'
+    ],
+    [
+        'farm' => 'Farm Subang',
+        'flock' => 'FLK-2026-005',
+        'age' => 5,
+        'population' => 24000,
+        'mortality' => '0.42%',
+        'status' => 'Preparing'
+    ]
+];
 
-        .dashboard-welcome::after {
-            content: "";
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border: 1px solid rgba(255,198,92,.18);
-            border-radius: 50%;
-            right: -70px;
-            top: -80px;
-            box-shadow: 0 0 0 45px rgba(255,198,92,.025), 0 0 0 90px rgba(255,198,92,.015);
-        }
+$activities = [
+    [
+        'title' => 'Daily recording submitted',
+        'description' => 'Farm Cibinong · FLK-2026-001',
+        'time' => '10 minutes ago',
+        'icon' => 'bi-clipboard-check',
+        'color' => 'green'
+    ],
+    [
+        'title' => 'New flock registered',
+        'description' => 'Farm Subang · FLK-2026-005',
+        'time' => '35 minutes ago',
+        'icon' => 'bi-plus-circle',
+        'color' => 'blue'
+    ],
+    [
+        'title' => 'Harvest process updated',
+        'description' => 'Farm Bandung · FLK-2026-003',
+        'time' => '1 hour ago',
+        'icon' => 'bi-truck',
+        'color' => 'orange'
+    ],
+    [
+        'title' => 'Chick-in recording completed',
+        'description' => 'Farm Karawang · FLK-2026-004',
+        'time' => '2 hours ago',
+        'icon' => 'bi-check-circle',
+        'color' => 'purple'
+    ]
+];
+?>
 
-        .dashboard-welcome__content {
-            position: relative;
-            z-index: 2;
-        }
+<style>
+/* =========================================
+   BROILER SYSTEM - DASHBOARD
+========================================= */
 
-        .dashboard-welcome__eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #ffc65c;
-            margin-bottom: 10px;
-        }
+.dashboard-page {
+    padding: 28px;
+    min-height: 100vh;
+    background: #F5F8FC;
+    color: #334E68;
+}
 
-        .dashboard-welcome__eyebrow::before {
-            content: "";
-            width: 24px;
-            height: 2px;
-            background: #f59a23;
-            display: inline-block;
-        }
+.dashboard-page * {
+    box-sizing: border-box;
+}
 
-        .dashboard-welcome h1 {
-            margin: 0 0 8px;
-            font-size: 30px;
-            font-weight: 800;
-            color: #fff;
-        }
+.dashboard-page .dashboard-welcome {
+    position: relative;
+    overflow: hidden;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border-radius: 18px;
+    background: linear-gradient(115deg, #244D75 0%, #3976AD 60%, #5B91C0 100%);
+    color: #FFFFFF;
+    box-shadow: 0 10px 28px rgba(57, 118, 173, .16);
+}
 
-        .dashboard-welcome h1 span {
-            color: #ffc65c;
-        }
+.dashboard-welcome::before,
+.dashboard-welcome::after {
+    content: "";
+    position: absolute;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50%;
+    pointer-events: none;
+}
 
-        .dashboard-welcome p {
-            margin: 0;
-            font-size: 14px;
-            color: rgba(255,255,255,.72);
-        }
+.dashboard-welcome::before {
+    width: 260px;
+    height: 260px;
+    right: -45px;
+    top: -150px;
+    box-shadow: 0 0 0 35px rgba(255,255,255,.035);
+}
 
-        .dashboard-summary {
-            margin-bottom: 26px;
-        }
+.dashboard-welcome::after {
+    width: 180px;
+    height: 180px;
+    right: 130px;
+    bottom: -145px;
+}
 
-        .summary-card {
-            position: relative;
-            overflow: hidden;
-            height: 100%;
-            background: #fff;
-            border: 1px solid #edf0f5;
-            border-radius: 18px;
-            padding: 22px;
-            box-shadow: 0 8px 25px rgba(15,23,42,.05);
-            transition: transform .25s ease, box-shadow .25s ease;
-        }
+.dashboard-welcome-content {
+    position: relative;
+    z-index: 1;
+}
 
-        .summary-card:hover,
-        .property-dashboard-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 35px rgba(15,23,42,.09);
-        }
+.dashboard-welcome-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.7);
+    margin-bottom: 10px;
+}
 
-        .summary-card__top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+.dashboard-welcome h1 {
+    font-size: 27px;
+    font-weight: 750;
+    color: #FFFFFF;
+    margin: 0 0 8px;
+    letter-spacing: -.5px;
+}
 
-        .summary-card__icon {
-            width: 46px;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 13px;
-            background: #fff5e5;
-            color: #d98212;
-            font-size: 18px;
-        }
+.dashboard-welcome p {
+    font-size: 13px;
+    color: rgba(255,255,255,.78);
+    margin: 0;
+}
 
-        .summary-card__label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.1px;
-            color: #8490a3;
-        }
+.dashboard-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 13px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.17);
+    border-radius: 9px;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
 
-        .summary-card__value {
-            font-size: 32px;
-            line-height: 1;
-            font-weight: 800;
-            color: #191714;
-            margin-bottom: 8px;
-        }
+/* SECTION */
 
-        .summary-card__description {
-            margin: 0;
-            font-size: 12px;
-            color: #8b95a5;
-        }
+.dashboard-section {
+    margin-bottom: 24px;
+}
 
-        .summary-card__accent {
-            position: absolute;
-            width: 90px;
-            height: 90px;
-            right: -40px;
-            bottom: -45px;
-            border-radius: 50%;
-            background: rgba(245,154,35,.07);
-        }
+.dashboard-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 15px;
+}
 
-        .dashboard-section {
-            margin-bottom: 26px;
-        }
+.dashboard-section-title {
+    font-size: 16px;
+    font-weight: 750;
+    color: #243B53;
+    margin: 0;
+}
 
-        .dashboard-section__header {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 16px;
-        }
+.dashboard-section-subtitle {
+    font-size: 11px;
+    color: #8796A8;
+    margin: 5px 0 0;
+}
 
-        .dashboard-section__eyebrow {
-            display: block;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1.8px;
-            color: #d98212;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
+/* KPI */
 
-        .dashboard-section__title {
-            margin: 0;
-            font-size: 22px;
-            font-weight: 800;
-            color: #191714;
-        }
+.dashboard-kpi {
+    position: relative;
+    height: 100%;
+    min-height: 145px;
+    padding: 19px;
+    background: #FFFFFF;
+    border: 1px solid #E8EEF4;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(36,59,83,.025);
+    transition: all .22s ease;
+}
 
-        .dashboard-section__description {
-            margin: 4px 0 0;
-            font-size: 13px;
-            color: #8993a4;
-        }
+.dashboard-kpi:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(36,59,83,.07);
+    border-color: #D5E5F3;
+}
 
-        .property-dashboard-card {
-            height: 100%;
-            background: #fff;
-            border: 1px solid #edf0f5;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(15,23,42,.05);
-            transition: transform .25s ease, box-shadow .25s ease;
-        }
+.dashboard-kpi-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 17px;
+}
 
-        .property-dashboard-card__image {
-            position: relative;
-            height: 180px;
-            overflow: hidden;
-            background: #f1eee9;
-        }
+.dashboard-kpi-icon {
+    width: 39px;
+    height: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    font-size: 17px;
+}
 
-        .property-dashboard-card__image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform .45s ease;
-        }
+.dashboard-kpi-icon.blue {
+    color: #3976AD;
+    background: #EAF2F9;
+}
 
-        .property-dashboard-card:hover .property-dashboard-card__image img {
-            transform: scale(1.04);
-        }
+.dashboard-kpi-icon.purple {
+    color: #8064B5;
+    background: #F1EDFA;
+}
 
-        .property-dashboard-card__featured,
-        .property-dashboard-card__status {
-            position: absolute;
-            top: 14px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 9px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
+.dashboard-kpi-icon.green {
+    color: #269B70;
+    background: #E9F7F0;
+}
 
-        .property-dashboard-card__featured {
-            left: 14px;
-            background: #f59a23;
-            color: #20160b;
-        }
+.dashboard-kpi-icon.orange {
+    color: #D58A27;
+    background: #FFF5E7;
+}
 
-        .property-dashboard-card__status {
-            right: 14px;
-            background: rgba(255,255,255,.94);
-            color: #176b45;
-        }
+.dashboard-kpi-label {
+    font-size: 11px;
+    color: #8493A5;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
 
-        .property-dashboard-card__status.is-occupied {
-            color: #9a5800;
-        }
+.dashboard-kpi-value {
+    font-size: 27px;
+    line-height: 1.2;
+    font-weight: 800;
+    color: #243B53;
+    letter-spacing: -.6px;
+}
 
-        .property-dashboard-card__content {
-            padding: 20px;
-        }
+.dashboard-kpi-change {
+    font-size: 10px;
+    color: #8493A5;
+    margin-top: 7px;
+}
 
-        .property-dashboard-card__category {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: #d98212;
-        }
+.dashboard-kpi-change i {
+    color: #269B70;
+    margin-right: 3px;
+}
 
-        .property-dashboard-card__title {
-            margin: 0 0 9px;
-            font-size: 17px;
-            font-weight: 800;
-            line-height: 1.4;
-            color: #191714;
-        }
+/* CARDS */
 
-        .property-dashboard-card__location {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #7e899b;
-            margin-bottom: 18px;
-        }
+.dashboard-card {
+    height: 100%;
+    padding: 20px;
+    background: #FFFFFF;
+    border: 1px solid #E8EEF4;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(36,59,83,.025);
+}
 
-        .property-dashboard-card__location i {
-            color: #d98212;
-        }
+.dashboard-chart {
+    min-height: 280px;
+}
 
-        .property-dashboard-card__footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 14px;
-            border-top: 1px solid #edf0f5;
-        }
+.dashboard-period {
+    display: inline-flex;
+    padding: 3px;
+    background: #F3F6FA;
+    border-radius: 8px;
+    gap: 2px;
+}
 
-        .property-dashboard-card__type {
-            font-size: 11px;
-            font-weight: 600;
-            color: #7e899b;
-        }
+.dashboard-period button {
+    border: 0;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: #8493A5;
+    font-size: 10px;
+    font-weight: 700;
+    transition: all .2s ease;
+}
 
-        .property-dashboard-card__arrow {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: #191714;
-            color: #ffc65c;
-            font-size: 12px;
-            text-decoration: none;
-        }
+.dashboard-period button.active {
+    background: #FFFFFF;
+    color: #3976AD;
+    box-shadow: 0 1px 4px rgba(36,59,83,.1);
+}
 
-        .dashboard-info-card {
-            height: 100%;
-            padding: 25px;
-            border: 1px solid #edf0f5;
-            border-radius: 20px;
-            background: #fff;
-            box-shadow: 0 8px 25px rgba(15,23,42,.04);
-        }
+.dashboard-period button:hover {
+    color: #3976AD;
+}
 
-        .dashboard-info-card__number {
-            color: #191714;
-            font-size: 26px;
-            font-weight: 800;
-        }
+/* FLOCK STATUS */
 
-        .dashboard-action-card {
-            height: 100%;
-            padding: 25px;
-            border-radius: 20px;
-            background:
-                radial-gradient(circle at 100% 0, rgba(245,154,35,.18), transparent 35%),
-                #191714;
-            color: #fff;
-            box-shadow: 0 12px 30px rgba(17,17,17,.12);
-        }
+.flock-status-total {
+    font-size: 27px;
+    font-weight: 800;
+    color: #243B53;
+    margin: 8px 0 2px;
+}
 
-        .dashboard-action-card__icon {
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            background: rgba(245,154,35,.15);
-            color: #ffc65c;
-            margin-bottom: 18px;
-        }
+.flock-status-caption {
+    color: #8493A5;
+    font-size: 10px;
+}
 
-        .dashboard-action-card h3 {
-            margin: 0 0 8px;
-            font-size: 19px;
-            color: #fff;
-            font-weight: 800;
-        }
+.flock-progress {
+    height: 8px;
+    display: flex;
+    overflow: hidden;
+    background: #EDF2F7;
+    border-radius: 20px;
+    margin: 20px 0;
+}
 
-        .dashboard-action-card p {
-            margin: 0 0 20px;
-            font-size: 12px;
-            line-height: 1.7;
-            color: rgba(255,255,255,.68);
-        }
+.flock-progress span {
+    height: 100%;
+    transition: width .4s ease;
+}
 
-        .dashboard-action-card a {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            background: linear-gradient(110deg, #e88a16, #ffc65c);
-            color: #20160b;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 800;
-        }
+.flock-status-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    font-size: 11px;
+}
 
-        .demo-label {
-            display: inline-block;
-            margin-left: 8px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            background: #fff1d9;
-            color: #985800;
-            font-size: 9px;
-            font-weight: 800;
-            vertical-align: middle;
-        }
+.flock-status-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748B;
+}
 
-        @media (max-width: 991px) {
-            .dashboard-modern { padding: 20px; }
-            .dashboard-welcome { padding: 25px; }
-            .dashboard-welcome h1 { font-size: 25px; }
-            .summary-card__value { font-size: 28px; }
-        }
+.flock-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
 
-        @media (max-width: 575px) {
-            .dashboard-modern { padding: 15px; }
-            .dashboard-welcome { border-radius: 17px; padding: 22px; }
-            .dashboard-welcome h1 { font-size: 22px; }
-            .dashboard-section__title { font-size: 19px; }
-            .property-dashboard-card__image { height: 190px; }
-            .dashboard-section__header { align-items: flex-start; }
-        }
-    </style>
+.flock-status-value {
+    color: #243B53;
+    font-weight: 700;
+}
+
+/* TABLE */
+
+.dashboard-table-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.dashboard-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+.dashboard-table thead th {
+    padding: 13px 16px;
+    background: #F8FAFC;
+    color: #8493A5;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #E8EEF4;
+    white-space: nowrap;
+}
+
+.dashboard-table tbody td {
+    padding: 14px 16px;
+    color: #52677D;
+    font-size: 11px;
+    border-bottom: 1px solid #F0F3F7;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.dashboard-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.dashboard-table tbody tr:hover {
+    background: #FAFCFE;
+}
+
+.flock-name {
+    color: #243B53;
+    font-weight: 700;
+    font-size: 11px;
+}
+
+.flock-farm {
+    color: #91A0B0;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.flock-id {
+    color: #3976AD;
+    font-weight: 700;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.status-badge::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status-badge.active {
+    color: #25865E;
+    background: #EAF7F0;
+}
+
+.status-badge.harvest {
+    color: #3976AD;
+    background: #EAF2F9;
+}
+
+.status-badge.preparing {
+    color: #C48A2B;
+    background: #FFF6E8;
+}
+
+.mortality-value {
+    font-weight: 700;
+    color: #334E68;
+}
+
+/* ACTIVITY */
+
+.dashboard-activity {
+    display: flex;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #F0F3F7;
+}
+
+.dashboard-activity:last-child {
+    border-bottom: 0;
+}
+
+.activity-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.activity-icon.green {
+    color: #269B70;
+    background: #E9F7F0;
+}
+
+.activity-icon.blue {
+    color: #3976AD;
+    background: #EAF2F9;
+}
+
+.activity-icon.orange {
+    color: #D58A27;
+    background: #FFF5E7;
+}
+
+.activity-icon.purple {
+    color: #8064B5;
+    background: #F1EDFA;
+}
+
+.activity-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #334E68;
+    margin: 0 0 4px;
+}
+
+.activity-description {
+    font-size: 10px;
+    color: #8493A5;
+    margin: 0;
+}
+
+.activity-time {
+    font-size: 9px;
+    color: #A0ADBA;
+    margin-top: 5px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 1199px) {
+    .dashboard-page {
+        padding: 22px;
+    }
+}
+
+@media(max-width: 767px) {
+    .dashboard-page {
+        padding: 16px;
+    }
+
+    .dashboard-welcome {
+        padding: 22px !important;
+    }
+
+    .dashboard-welcome h1 {
+        font-size: 22px;
+    }
+
+    .dashboard-date {
+        margin-top: 18px;
+    }
+
+    .dashboard-section-header {
+        align-items: flex-start;
+    }
+
+    .dashboard-kpi {
+        min-height: 135px;
+        padding: 15px;
+    }
+
+    .dashboard-kpi-value {
+        font-size: 23px;
+    }
+
+    .dashboard-card {
+        padding: 16px;
+    }
+
+    .dashboard-table-card {
+        padding: 0;
+    }
+}
+
+@media(max-width: 420px) {
+    .dashboard-period button {
+        padding: 6px 7px;
+        font-size: 9px;
+    }
+}
+</style>
+
+
+<div class="dashboard-page">
 
     <!-- WELCOME -->
     <section class="dashboard-welcome">
-        <div class="dashboard-welcome__content">
-            <div class="dashboard-welcome__eyebrow">
-                PAV DASHBOARD <span class="demo-label">DEMO</span>
+        <div class="dashboard-welcome-content">
+            <div class="row align-items-center">
+
+                <div class="col-lg-8">
+                    <div class="dashboard-welcome-label">
+                        BROILER OPERATIONS OVERVIEW
+                    </div>
+
+                    <h1>
+                        Good day, <?= html_escape($first_name); ?>!
+                    </h1>
+
+                    <p>
+                        Here's what's happening across your broiler operations today.
+                    </p>
+                </div>
+
+                <div class="col-lg-4 text-lg-end">
+                    <div class="dashboard-date">
+                        <i class="bi bi-calendar3"></i>
+                        <?= date('l, d F Y'); ?>
+                    </div>
+                </div>
+
             </div>
-
-            <h1>
-                Welcome back,<br>
-                <span>Administrator</span>
-            </h1>
-
-            <p>
-                Welcome to PT Pygmalion Artha Victory management dashboard.
-                This page is a static preview using sample data.
-            </p>
         </div>
     </section>
 
-    <!-- SUMMARY CARDS -->
-    <!-- <section class="dashboard-summary">
-        <div class="row g-3">
 
-            <div class="col-xl-3 col-md-6">
-                <div class="summary-card">
-                    <div class="summary-card__top">
-                        <div class="summary-card__icon">
-                            <i class="bi bi-buildings"></i>
-                        </div>
-                    </div>
-                    <div class="summary-card__label">Total Properties</div>
-                    <div class="summary-card__value"><?= number_format($summary['properties']); ?></div>
-                    <p class="summary-card__description">Sample registered properties</p>
-                    <div class="summary-card__accent"></div>
-                </div>
-            </div>
+    <!-- KPI OVERVIEW -->
+    <section class="dashboard-section">
 
-            <div class="col-xl-3 col-md-6">
-                <div class="summary-card">
-                    <div class="summary-card__top">
-                        <div class="summary-card__icon">
-                            <i class="bi bi-check2-circle"></i>
-                        </div>
-                    </div>
-                    <div class="summary-card__label">Available Properties</div>
-                    <div class="summary-card__value"><?= number_format($summary['available']); ?></div>
-                    <p class="summary-card__description">Sample available properties</p>
-                    <div class="summary-card__accent"></div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6">
-                <div class="summary-card">
-                    <div class="summary-card__top">
-                        <div class="summary-card__icon">
-                            <i class="bi bi-star"></i>
-                        </div>
-                    </div>
-                    <div class="summary-card__label">Featured Properties</div>
-                    <div class="summary-card__value"><?= number_format($summary['featured']); ?></div>
-                    <p class="summary-card__description">Sample highlighted properties</p>
-                    <div class="summary-card__accent"></div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6">
-                <div class="summary-card">
-                    <div class="summary-card__top">
-                        <div class="summary-card__icon">
-                            <i class="bi bi-grid"></i>
-                        </div>
-                    </div>
-                    <div class="summary-card__label">Property Categories</div>
-                    <div class="summary-card__value"><?= number_format($summary['categories']); ?></div>
-                    <p class="summary-card__description">Sample property categories</p>
-                    <div class="summary-card__accent"></div>
-                </div>
-            </div>
-
-        </div>
-    </section> -->
-
-    <!-- RECENT PROPERTIES -->
-    <!-- <section class="dashboard-section">
-        <div class="dashboard-section__header">
+        <div class="dashboard-section-header">
             <div>
-                <span class="dashboard-section__eyebrow">Property Portfolio</span>
-                <h2 class="dashboard-section__title">
-                    Recent Properties <span class="demo-label">SAMPLE DATA</span>
-                </h2>
-                <p class="dashboard-section__description">
-                    Example property cards for preview purposes only.
+                <h2 class="dashboard-section-title">Operational Overview</h2>
+                <p class="dashboard-section-subtitle">
+                    Key indicators across your broiler operations
                 </p>
             </div>
         </div>
 
-        <div class="row g-4">
-            <?php foreach ($recent_properties as $property): ?>
-                <div class="col-xl-4 col-lg-4 col-md-6">
-                    <div class="property-dashboard-card">
+        <div class="row g-3">
 
-                        <div class="property-dashboard-card__image">
-                            <img
-                                src="<?= base_url($property['thumbnail']); ?>"
-                                alt="<?= html_escape($property['title']); ?>"
-                                loading="lazy"
-                                onerror="this.onerror=null;this.src='https://placehold.co/800x500/292017/ffc65c?text=PAV+Property';">
+            <?php foreach ($kpis as $kpi): ?>
+                <div class="col-xl-3 col-md-6 col-6">
 
-                            <?php if ($property['featured']): ?>
-                                <span class="property-dashboard-card__featured">
-                                    <i class="bi bi-star-fill me-1"></i> Featured
-                                </span>
-                            <?php endif; ?>
+                    <div class="dashboard-kpi">
 
-                            <span class="property-dashboard-card__status <?= $property['status'] === 'Occupied' ? 'is-occupied' : ''; ?>">
-                                <?= html_escape($property['status']); ?>
-                            </span>
+                        <div class="dashboard-kpi-top">
+                            <div class="dashboard-kpi-icon <?= $kpi['color']; ?>">
+                                <i class="bi <?= $kpi['icon']; ?>"></i>
+                            </div>
+                            <i class="bi bi-three-dots"
+                               style="color:#B2BECA;"></i>
                         </div>
 
-                        <div class="property-dashboard-card__content">
-                            <span class="property-dashboard-card__category">
-                                <?= html_escape($property['category_name']); ?>
-                            </span>
+                        <div class="dashboard-kpi-label">
+                            <?= html_escape($kpi['label']); ?>
+                        </div>
 
-                            <h3 class="property-dashboard-card__title">
-                                <?= html_escape($property['title']); ?>
-                            </h3>
+                        <div class="dashboard-kpi-value">
+                            <?= html_escape($kpi['value']); ?>
+                        </div>
 
-                            <div class="property-dashboard-card__location">
-                                <i class="bi bi-geo-alt-fill"></i>
-                                <span>
-                                    <?= html_escape($property['city']); ?>,
-                                    <?= html_escape($property['province']); ?>
-                                </span>
-                            </div>
-
-                            <div class="property-dashboard-card__footer">
-                                <span class="property-dashboard-card__type">
-                                    <?= html_escape($property['asset_class']); ?>
-                                </span>
-
-                                <span class="property-dashboard-card__arrow" aria-label="Demo only">
-                                    <i class="bi bi-arrow-up-right"></i>
-                                </span>
-                            </div>
+                        <div class="dashboard-kpi-change">
+                            <?= html_escape($kpi['change']); ?>
                         </div>
 
                     </div>
+
                 </div>
             <?php endforeach; ?>
+
         </div>
-    </section> -->
+    </section>
 
-    <!-- BOTTOM INFORMATION -->
+
+    <!-- PERFORMANCE -->
     <section class="dashboard-section">
-        <div class="row g-4">
 
-            <div class="col-lg-8">
-                <div class="dashboard-info-card">
-                    <div class="dashboard-section__header">
+        <div class="dashboard-section-header">
+            <div>
+                <h2 class="dashboard-section-title">Performance Overview</h2>
+                <p class="dashboard-section-subtitle">
+                    Population and mortality performance trends
+                </p>
+            </div>
+
+            <div class="dashboard-period" id="performancePeriod">
+                <button type="button" data-period="7" class="active">7D</button>
+                <button type="button" data-period="30">30D</button>
+                <button type="button" data-period="90">90D</button>
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            <div class="col-xl-8">
+                <div class="dashboard-card dashboard-chart">
+
+                    <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <span class="dashboard-section__eyebrow">Dashboard Overview</span>
-                            <h2 class="dashboard-section__title">PAV Management Preview</h2>
-                            <p class="dashboard-section__description">
-                                This area is a static layout preview. The figures below are illustrative only.
+                            <div class="dashboard-section-title"
+                                 style="font-size:13px;">
+                                Population Trend
+                            </div>
+                            <p class="dashboard-section-subtitle">
+                                Total recorded broiler population
                             </p>
                         </div>
+
+                        <span class="small"
+                              style="color:#3976AD;font-size:10px;">
+                            <i class="bi bi-circle-fill me-1"
+                               style="font-size:7px;"></i>
+                            Population
+                        </span>
                     </div>
 
-                    <div class="row g-3 mt-1">
-                        <div class="col-md-4">
-                            <div class="p-3 rounded-3 bg-light">
-                                <div class="text-muted small mb-2">Properties</div>
-                                <div class="dashboard-info-card__number">
-                                    <?= number_format($summary['properties']); ?>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="populationChart" style="height:225px;"></div>
 
-                        <div class="col-md-4">
-                            <div class="p-3 rounded-3 bg-light">
-                                <div class="text-muted small mb-2">Categories</div>
-                                <div class="dashboard-info-card__number">
-                                    <?= number_format($summary['categories']); ?>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="p-3 rounded-3 bg-light">
-                                <div class="text-muted small mb-2">Featured</div>
-                                <div class="dashboard-info-card__number">
-                                    <?= number_format($summary['featured']); ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="dashboard-action-card">
-                    <div class="dashboard-action-card__icon">
-                        <i class="bi bi-layout-text-window-reverse"></i>
+            <div class="col-xl-4">
+                <div class="dashboard-card">
+
+                    <div class="dashboard-section-title"
+                         style="font-size:13px;">
+                        Flock Status
                     </div>
 
-                    <h3>Static Dashboard</h3>
-
-                    <p>
-                        This dashboard currently displays sample information only.
-                        Database integration can be added later when required.
+                    <p class="dashboard-section-subtitle">
+                        Current flock distribution
                     </p>
 
-                    <span class="d-inline-flex align-items-center gap-2 small fw-bold"
-                          style="color:#ffc65c;">
-                        <i class="bi bi-check-circle-fill"></i>
-                        Preview Mode Active
-                    </span>
+                    <div class="flock-status-total">120</div>
+                    <div class="flock-status-caption">Total registered flocks</div>
+
+                    <div class="flock-progress">
+                        <?php foreach ($flock_status as $status): ?>
+                            <span style="
+                                width:<?= $status['percentage']; ?>%;
+                                background:<?= $status['color']; ?>;
+                            "></span>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <?php foreach ($flock_status as $status): ?>
+                        <div class="flock-status-item">
+
+                            <div class="flock-status-name">
+                                <span class="flock-status-dot"
+                                      style="background:<?= $status['color']; ?>;">
+                                </span>
+
+                                <?= html_escape($status['label']); ?>
+                            </div>
+
+                            <div class="flock-status-value">
+                                <?= number_format($status['value']); ?>
+                                <span style="color:#9AA8B7;font-weight:400;">
+                                    (<?= $status['percentage']; ?>%)
+                                </span>
+                            </div>
+
+                        </div>
+                    <?php endforeach; ?>
+
                 </div>
             </div>
 
         </div>
     </section>
 
+
+    <!-- FLOCK MONITORING -->
+    <section class="dashboard-section">
+
+        <div class="dashboard-section-header">
+            <div>
+                <h2 class="dashboard-section-title">Flock Monitoring</h2>
+                <p class="dashboard-section-subtitle">
+                    Overview of currently monitored flocks
+                </p>
+            </div>
+
+            <span style="font-size:10px;color:#8493A5;">
+                Showing 5 sample records
+            </span>
+        </div>
+
+        <div class="dashboard-card dashboard-table-card">
+
+            <div class="table-responsive">
+
+                <table class="dashboard-table">
+
+                    <thead>
+                        <tr>
+                            <th>Farm / Flock</th>
+                            <th>Age</th>
+                            <th>Population</th>
+                            <th>Mortality</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <?php foreach ($flocks as $flock): ?>
+
+                            <tr>
+
+                                <td>
+                                    <div class="flock-name">
+                                        <?= html_escape($flock['farm']); ?>
+                                    </div>
+
+                                    <div class="flock-farm">
+                                        <?= html_escape($flock['flock']); ?>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <strong><?= $flock['age']; ?></strong>
+                                    <span style="color:#94A3B8;"> days</span>
+                                </td>
+
+                                <td>
+                                    <?= number_format($flock['population']); ?>
+                                </td>
+
+                                <td>
+                                    <span class="mortality-value">
+                                        <?= html_escape($flock['mortality']); ?>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="status-badge <?= strtolower($flock['status']); ?>">
+                                        <?= html_escape($flock['status']); ?>
+                                    </span>
+                                </td>
+
+                            </tr>
+
+                        <?php endforeach; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- RECENT ACTIVITIES -->
+    <section class="dashboard-section">
+
+        <div class="row g-3">
+
+            <div class="col-lg-8">
+
+                <div class="dashboard-card">
+
+                    <div class="dashboard-section-header">
+                        <div>
+                            <h2 class="dashboard-section-title">
+                                Recent Activities
+                            </h2>
+
+                            <p class="dashboard-section-subtitle">
+                                Latest operational updates
+                            </p>
+                        </div>
+
+                        <span style="font-size:10px;color:#3976AD;">
+                            <i class="bi bi-clock-history me-1"></i>
+                            Recent
+                        </span>
+                    </div>
+
+                    <?php foreach ($activities as $activity): ?>
+
+                        <div class="dashboard-activity">
+
+                            <div class="activity-icon <?= $activity['color']; ?>">
+                                <i class="bi <?= $activity['icon']; ?>"></i>
+                            </div>
+
+                            <div class="flex-grow-1">
+                                <p class="activity-title">
+                                    <?= html_escape($activity['title']); ?>
+                                </p>
+
+                                <p class="activity-description">
+                                    <?= html_escape($activity['description']); ?>
+                                </p>
+
+                                <div class="activity-time">
+                                    <?= html_escape($activity['time']); ?>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-4">
+
+                <div class="dashboard-card h-100">
+
+                    <div class="dashboard-section-title"
+                         style="font-size:14px;">
+                        Operational Snapshot
+                    </div>
+
+                    <p class="dashboard-section-subtitle">
+                        Sample daily performance indicators
+                    </p>
+
+                    <div class="mt-4">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="font-size:11px;color:#8493A5;">
+                                Daily Recording
+                            </span>
+                            <strong style="font-size:11px;color:#243B53;">
+                                92%
+                            </strong>
+                        </div>
+
+                        <div class="progress"
+                             style="height:7px;background:#EDF2F7;">
+                            <div class="progress-bar"
+                                 style="width:92%;background:#3976AD;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="font-size:11px;color:#8493A5;">
+                                Chick-in Completion
+                            </span>
+                            <strong style="font-size:11px;color:#243B53;">
+                                85%
+                            </strong>
+                        </div>
+
+                        <div class="progress"
+                             style="height:7px;background:#EDF2F7;">
+                            <div class="progress-bar"
+                                 style="width:85%;background:#269B70;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="font-size:11px;color:#8493A5;">
+                                Harvest Progress
+                            </span>
+                            <strong style="font-size:11px;color:#243B53;">
+                                68%
+                            </strong>
+                        </div>
+
+                        <div class="progress"
+                             style="height:7px;background:#EDF2F7;">
+                            <div class="progress-bar"
+                                 style="width:68%;background:#E5A23B;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4 p-3 rounded-3"
+                         style="background:#F3F8FD;">
+
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-info-circle-fill"
+                               style="color:#3976AD;"></i>
+
+                            <strong style="font-size:11px;color:#3976AD;">
+                                Dashboard Preview
+                            </strong>
+                        </div>
+
+                        <p class="mb-0"
+                           style="font-size:10px;line-height:1.7;color:#71869C;">
+                            All figures currently use sample data.
+                            Database integration will be implemented
+                            after the dashboard design is approved.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
 </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    if (typeof ApexCharts === 'undefined') {
+        console.warn('ApexCharts is not loaded.');
+        return;
+    }
+
+    const chartElement = document.querySelector('#populationChart');
+
+    if (!chartElement) return;
+
+    const chartData = {
+        7: {
+            categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            population: [1180000, 1192000, 1205000, 1210000, 1228000, 1260000, 1280000]
+        },
+        30: {
+            categories: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            population: [1100000, 1160000, 1210000, 1280000]
+        },
+        90: {
+            categories: ['Month 1', 'Month 2', 'Month 3'],
+            population: [980000, 1120000, 1280000]
+        }
+    };
+
+    const options = {
+        chart: {
+            type: 'area',
+            height: 225,
+            toolbar: {
+                show: false
+            },
+            zoom: {
+                enabled: false
+            },
+            fontFamily: 'inherit',
+            animations: {
+                enabled: true,
+                speed: 500
+            }
+        },
+
+        series: [{
+            name: 'Population',
+            data: chartData[7].population
+        }],
+
+        colors: ['#3976AD'],
+
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: .22,
+                opacityTo: .02,
+                stops: [0, 100]
+            }
+        },
+
+        dataLabels: {
+            enabled: false
+        },
+
+        markers: {
+            size: 4,
+            strokeWidth: 2,
+            strokeColors: '#FFFFFF',
+            hover: {
+                size: 6
+            }
+        },
+
+        xaxis: {
+            categories: chartData[7].categories,
+            labels: {
+                style: {
+                    colors: '#94A3B8',
+                    fontSize: '10px'
+                }
+            },
+            axisBorder: {
+                show: false
+            },
+            axisTicks: {
+                show: false
+            }
+        },
+
+        yaxis: {
+            labels: {
+                formatter: function (value) {
+                    return (value / 1000000).toFixed(2) + 'M';
+                },
+                style: {
+                    colors: '#94A3B8',
+                    fontSize: '10px'
+                }
+            }
+        },
+
+        grid: {
+            borderColor: '#EDF2F7',
+            strokeDashArray: 4,
+            padding: {
+                left: 5,
+                right: 10
+            }
+        },
+
+        tooltip: {
+            y: {
+                formatter: function (value) {
+                    return new Intl.NumberFormat('en-US').format(value) + ' birds';
+                }
+            }
+        }
+    };
+
+    const populationChart = new ApexCharts(chartElement, options);
+
+    populationChart.render();
+
+    const periodButtons = document.querySelectorAll(
+        '#performancePeriod button'
+    );
+
+    periodButtons.forEach(function (button) {
+
+        button.addEventListener('click', function () {
+
+            const period = this.dataset.period;
+            const selectedData = chartData[period];
+
+            periodButtons.forEach(function (item) {
+                item.classList.remove('active');
+            });
+
+            this.classList.add('active');
+
+            populationChart.updateOptions({
+                xaxis: {
+                    categories: selectedData.categories
+                }
+            });
+
+            populationChart.updateSeries([{
+                name: 'Population',
+                data: selectedData.population
+            }]);
+
+        });
+
+    });
+
+});
+</script>

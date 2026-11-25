@@ -1,95 +1,178 @@
+
 <?php
-class Material_model extends CI_Model {
+defined('BASEPATH') OR exit('No direct script access allowed');
 
-    private $table = "abc_cd_material";
+class Material_model extends CI_Model
+{
+    private $table = 'cd_material';
 
-    public function get_data($limit, $offset, $search, $order, $dir)
+    /**
+     * Material list with filters.
+     */
+    public function get_material_list($filters = [])
     {
-        $this->db->select('
-            m.*,
-            c.CODE_NAME AS material_class_name
-        ');
-        $this->db->from('abc_cd_material m');
+        $this->db->from($this->table);
 
-        // JOIN ke cd_code berdasarkan material_class
-        $this->db->join('cd_code c', 'c.CODE = m.material_class AND c.HEAD_CODE = "AE"', 'left');
+        // Only active material.
+        $this->db->where(
+            "(delete_flag IS NULL OR delete_flag <> 'Y')",
+            NULL,
+            FALSE
+        );
 
-        if ($search) {
-            $this->db->group_start()
-                ->like('m.material', $search)
-                ->or_like('m.material_name', $search)
-                ->or_like('m.material_class', $search)
-                ->or_like('m.grade', $search)
-                ->or_like('c.CODE_NAME', $search) // bisa search nama class juga
-                ->group_end();
+        // Search Material Code or Name.
+        if (!empty($filters['search'])) {
+            $search = $this->db->escape(
+                '%' . trim($filters['search']) . '%'
+            );
+
+            $this->db->where(
+                "(
+                    material ILIKE {$search}
+                    OR COALESCE(material_name, '') ILIKE {$search}
+                    OR COALESCE(material_sname, '') ILIKE {$search}
+                )",
+                NULL,
+                FALSE
+            );
         }
 
-        // Hindari SQL error kalau kolom order dari table alias
-        $allowed_order = ['material','material_name','material_class','grade','material_class_name'];
-        if (!in_array($order, $allowed_order)) {
-            $order = 'material';
+        // Material filter.
+        if (!empty($filters['material'])) {
+            $material = $this->db->escape(
+                '%' . trim($filters['material']) . '%'
+            );
+
+            $this->db->where(
+                "material ILIKE {$material}",
+                NULL,
+                FALSE
+            );
         }
 
-        if ($order == 'material_class_name') {
-            $this->db->order_by('c.CODE_NAME', $dir);
-        } else {
-            $this->db->order_by('m.'.$order, $dir);
+        // Material Class filter.
+        if (!empty($filters['class1'])) {
+            $this->db->where('class1', $filters['class1']);
         }
 
-        return $this->db->get()->result_array();
+        // Using Class filter.
+        if (!empty($filters['class2'])) {
+            $this->db->where('class2', $filters['class2']);
+        }
+
+        $this->db->order_by('material', 'ASC');
+
+        return $this->db->get()->result();
     }
 
-    public function count_data($search)
+    /**
+     * Get material detail.
+     */
+    public function get_by_material($material)
     {
-        $this->db->from('abc_cd_material m');
-        $this->db->join('cd_code c', 'c.CODE = m.material_class AND c.HEAD_CODE = "AE"', 'left');
-
-        if ($search) {
-            $this->db->group_start()
-                ->like('m.material', $search)
-                ->or_like('m.material_name', $search)
-                ->or_like('m.material_class', $search)
-                ->or_like('m.grade', $search)
-                ->or_like('c.CODE_NAME', $search)
-                ->group_end();
-        }
-
-        return $this->db->count_all_results();
+        return $this->db
+            ->where('material', $material)
+            ->where(
+                "(delete_flag IS NULL OR delete_flag <> 'Y')",
+                NULL,
+                FALSE
+            )
+            ->get($this->table)
+            ->row();
     }
 
-    public function get_by_pk($material)
+    /**
+     * Check duplicate material code.
+     */
+    public function exists_material($material)
     {
-        return $this->db->get_where($this->table, ['material' => $material])->row();
+        return $this->db
+            ->where('material', $material)
+            ->count_all_results($this->table) > 0;
     }
 
-    public function detail($id) {
-        return $this->db->where('material', $id)->get($this->table)->row_array();
+    /**
+     * Get dropdown options from cd_code.
+     */
+    public function get_dropdown_codes($head_code)
+    {
+        return $this->db
+            ->select('code, code_name')
+            ->from('cd_code')
+            ->where('head_code', $head_code)
+            ->where('use_yn', 'Y')
+            ->where('code <>', '*')
+            ->order_by('code', 'ASC')
+            ->get()
+            ->result();
     }
 
-    public function insert($data) {
+    /**
+     * Insert material.
+     */
+    public function insert_material($data)
+    {
         return $this->db->insert($this->table, $data);
     }
 
-    public function update($id, $data) {
-        return $this->db->where('material', $id)->update($this->table, $data);
+    /**
+     * Update material.
+     */
+    public function update_material($material, $data)
+    {
+        return $this->db
+            ->where('material', $material)
+            ->where(
+                "(delete_flag IS NULL OR delete_flag <> 'Y')",
+                NULL,
+                FALSE
+            )
+            ->update($this->table, $data);
     }
 
-    public function delete($id) {
-        return $this->db->where('material', $id)->delete($this->table);
+    /**
+     * Soft delete material.
+     */
+    public function delete_material($material, $user)
+    {
+        $data = [
+            'delete_flag' => 'Y',
+            'delete_emp'  => substr($user, 0, 6),
+            'delete_date' => date('Ymd')
+        ];
+
+        return $this->db
+            ->where('material', $material)
+            ->where(
+                "(delete_flag IS NULL OR delete_flag <> 'Y')",
+                NULL,
+                FALSE
+            )
+            ->update($this->table, $data);
     }
 
-    public function export($search, $order, $dir) {
+    /**
+     * Generate next Material Code.
+     * Format: MAT00001
+     */
+    public function generate_material_code()
+    {
+        $query = $this->db->query("
+            SELECT nextval('cd_material_code_seq') AS sequence_number
+        ");
 
-        if ($search) {
-            $this->db->group_start()
-                ->like('material', $search)
-                ->or_like('material_name', $search)
-                ->or_like('material_class', $search)
-                ->or_like('grade', $search)
-                ->group_end();
+        $row = $query->row();
+
+        if (!$row) {
+            return FALSE;
         }
 
-        $this->db->order_by($order, $dir);
-        return $this->db->get($this->table)->result_array();
+        return 'MAT' . str_pad(
+            (string) $row->sequence_number,
+            5,
+            '0',
+            STR_PAD_LEFT
+        );
     }
+
 }

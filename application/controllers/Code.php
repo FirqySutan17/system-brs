@@ -1,297 +1,333 @@
+
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Code extends MY_Controller {
-
+class Code extends CI_Controller
+{
     public function __construct()
     {
         parent::__construct();
-        // if (!has_permission('base_general_code')) {
-        //     show_404();
-        // }
-        $this->load->model('Code_model');
-        $this->load->library('session');
-        $this->load->helper(['url','download','file']);
+
+        $this->load->library(['session']);
+        $this->load->helper(['url', 'form']);
+        $this->load->model('Code_model', 'code_model');
+
+        if (!$this->session->userdata('logged_in')) {
+            redirect('auth');
+        }
     }
 
+    /**
+     * Main Code Master page.
+     */
     public function index()
     {
-        $this->load->view('templates/header', ['title' => 'General Code']);
-        $this->load->view('templates/sidebar');
-        $this->load->view('admin/code/list'); // konten dinamis
+        $data['title'] = 'Code Master';
 
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar');
+        $this->load->view('admin/code/list');
         $this->load->view('templates/footer');
     }
 
-    public function get_head_code_panel()
+    /**
+     * Return General Code categories.
+     */
+    public function get_heads()
     {
-        $rows = $this->Code_model->get_head_star();
-        echo json_encode($rows); // [{HEAD_CODE, CODE_NAME}, ...]
-    }
+        $heads = $this->code_model->get_unique_head();
 
-    public function get_codes_by_head()
-    {
-        $head = $this->input->get('head', TRUE); // HEAD_CODE dari panel kiri
-        $page   = (int)$this->input->get('page') ?: 1;
-        $limit  = (int)$this->input->get('limit') ?: 10;
-        $order  = $this->input->get('order', TRUE) ?: 'code';
-        $dir    = strtoupper($this->input->get('dir', TRUE)) === 'DESC' ? 'DESC' : 'ASC';
-
-        $start = ($page - 1) * $limit;
-
-        // Ambil data untuk HEAD_CODE tertentu
-        $rows = $this->Code_model->get_data_by_head($head, $limit, $start, $order, $dir);
-        $total = $this->Code_model->count_data_by_head($head);
-
-        // pagination bootstrap
-        $pages = ceil($total / $limit);
-        $pagination = $this->build_pagination($pages, $page);
-
-        echo json_encode([
-            'rows' => $rows,
-            'total' => $total,
-            'pagination' => $pagination,
-            'page' => $page
+        $this->json_response([
+            'status' => true,
+            'data'   => $heads
         ]);
     }
 
-    public function load_data()
+    /**
+     * Return code members by selected HEAD_CODE.
+     */
+    public function get_codes()
     {
-        $page   = (int)$this->input->get('page') ?: 1;
-        $limit  = (int)$this->input->get('limit') ?: 10;
-        $search = $this->input->get('search', TRUE);
-        $order  = $this->input->get('order', TRUE) ?: 'head_code';
-        $dir    = strtoupper($this->input->get('dir', TRUE)) === 'DESC' ? 'DESC' : 'ASC';
+        $head_code = trim((string) $this->input->get('head_code', true));
+        $search    = trim((string) $this->input->get('search', true));
 
-        $start = ($page - 1) * $limit;
+        if ($head_code === '') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Head Code is required.'
+            ], 400);
+        }
 
-        $rows = $this->Code_model->get_data($limit, $start, $search, $order, $dir);
-        $total = $this->Code_model->count_data($search);
+        $head = $this->code_model->get_head($head_code);
 
-        // build pagination html (bootstrap)
-        $pages = ceil($total / $limit);
-        $pagination = $this->build_pagination($pages, $page);
+        if (!$head) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'General Code not found.'
+            ], 404);
+        }
 
-        // return JSON
-        echo json_encode([
-            'rows' => $rows,
-            'total' => $total,
-            'pagination' => $pagination,
-            'page' => $page
+        $limit = 500;
+        $rows = $this->code_model->get_data_by_head(
+            $head_code,
+            $search,
+            $limit,
+            0
+        );
+
+        $total = $this->code_model->count_data_by_head(
+            $head_code,
+            $search
+        );
+
+        $this->json_response([
+            'status' => true,
+            'head'   => $head,
+            'data'   => $rows,
+            'total'  => $total
         ]);
     }
 
-    private function build_pagination($pages, $current)
-    {
-        $html = '<ul class="pagination pagination-sm">';
-        for ($i=1;$i<=$pages;$i++) {
-            $active = ($i == $current) ? 'active' : '';
-            $html .= '<li class="page-item '.$active.'"><a href="javascript:void(0)" class="page-link" onclick="loadPage('.$i.')">'.$i.'</a></li>';
-        }
-        $html .= '</ul>';
-        return $html;
-    }
-
     /**
-     * AJAX: get detail (for modal)
+     * Return one record for edit.
      */
-    public function detail()
+    public function get_detail()
     {
-        $head = $this->input->get('head', TRUE);
-        $code = $this->input->get('code', TRUE);
-        if (!$head || !$code) {
-            echo json_encode(['status'=>false,'message'=>'Invalid key']);
-            return;
-        }
-        $row = $this->Code_model->get_by_pk($head,$code);
-        echo json_encode(['status'=>true,'data'=>$row]);
-    }
+        $head_code = trim((string) $this->input->get('head_code', true));
+        $code      = trim((string) $this->input->get('code', true));
 
-    /**
-     * AJAX: create new record
-     */
-    public function create()
-    {
-        $data = $this->input->post(NULL, TRUE);
-
-        // Validasi wajib diisi
-        if (empty($data['head_code']) || empty($data['code']) || empty($data['code_name'])) {
-            echo json_encode(['status'=>false,'message'=>'head_code, code dan code_name wajib diisi']);
-            return;
+        if ($head_code === '' || $code === '') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Head Code and Code are required.'
+            ], 400);
         }
 
-        // Validasi UNIQUE: HEAD_CODE + CODE
-        $exists = $this->db->where('head_code', $data['head_code'])
-                        ->where('code', $data['code'])
-                        ->get('abc_cd_code')
-                        ->row();
+        $row = $this->code_model->get_by_pk($head_code, $code);
 
-        if($exists){
-            echo json_encode([
-                'status' => false,
-                'message' => 'Kombinasi HEAD_CODE + CODE sudah ada'
-            ]);
-            return;
+        if (!$row) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Code not found.'
+            ], 404);
         }
 
-        // Insert ke DB
-        $ok = $this->db->insert('abc_cd_code', [
-            'head_code' => $data['head_code'],
-            'code'      => $data['code'],
-            'code_name' => $data['code_name'],
-            'desc1'     => $data['desc1'] ?? '',
-            'use_yn'    => $data['use_yn'] ?? 'N'
-        ]);
-
-        echo json_encode([
-            'status' => $ok,
-            'message' => $ok ? 'Data berhasil ditambahkan' : 'Gagal menambahkan data'
+        $this->json_response([
+            'status' => true,
+            'data'   => $row
         ]);
     }
 
-    public function get_head_code(){
-        $data = $this->db->select('HEAD_CODE as id, HEAD_CODE as text')
-                        ->group_by('HEAD_CODE')
-                        ->order_by('HEAD_CODE')
-                        ->get('abc_cd_code')
-                        ->result_array();
-
-        echo json_encode($data); // langsung array, tidak pakai 'data'
-    }
-
-    // Ambil CODE berdasarkan HEAD_CODE
-    public function get_code_by_head(){
-        $head = $this->input->get('head');
-        $data = $this->db->select('CODE as id, CODE as text')
-                        ->where('HEAD_CODE', $head)
-                        ->order_by('CODE')
-                        ->get('abc_cd_code')
-                        ->result_array();
-
-        echo json_encode($data); // langsung array
-    }
-
-    public function edit()
+    /**
+     * Insert or update code.
+     */
+    public function save()
     {
-        $head = $this->input->get('head', TRUE);
-        $code = $this->input->get('code', TRUE);
-        if (!$head || !$code) {
-            echo json_encode(['status'=>false,'message'=>'Invalid key']);
-            return;
+        if (!$this->input->method(true) === 'POST') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Invalid request method.'
+            ], 405);
         }
-        $row = $this->Code_model->get_by_pk($head,$code);
-        echo json_encode(['status'=>true,'data'=>$row]);
+
+        $mode      = trim((string) $this->input->post('mode', true));
+        $head_code = trim((string) $this->input->post('head_code', true));
+        $code      = trim((string) $this->input->post('code', true));
+        $code_name = trim((string) $this->input->post('code_name', true));
+
+        if (!in_array($mode, ['insert', 'update'], true)) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Invalid save mode.'
+            ], 400);
+        }
+
+        if ($head_code === '' || $code === '' || $code_name === '') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Head Code, Code, and Code Name are required.'
+            ], 400);
+        }
+
+        if (strlen($head_code) > 8 || strlen($code) > 10 || strlen($code_name) > 40) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Some fields exceed the maximum allowed length.'
+            ], 400);
+        }
+
+        if ($code === '*') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'The * code is reserved for General Code category.'
+            ], 400);
+        }
+
+        // A member code must belong to an existing General Code category.
+        if (!$this->code_model->get_head($head_code)) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Selected General Code category does not exist.'
+            ], 400);
+        }
+
+        $use_yn = strtoupper(trim((string) $this->input->post('use_yn', true)));
+        if (!in_array($use_yn, ['Y', 'N'], true)) {
+            $use_yn = 'Y';
+        }
+
+        $data = [
+            'code_name' => $code_name,
+            'desc1'     => $this->post_nullable('desc1', 40),
+            'desc2'     => $this->post_nullable('desc2', 40),
+            'use_yn'    => $use_yn,
+            'desc3'     => $this->post_nullable('desc3', 40),
+            'desc4'     => $this->post_nullable('desc4', 200),
+            'desc5'     => $this->post_nullable('desc5', 40),
+            'desc6'     => $this->post_nullable('desc6', 40),
+            'desc7'     => $this->post_nullable('desc7', 40),
+            'desc8'     => $this->post_nullable('desc8', 40),
+            'desc9'     => $this->post_nullable('desc9', 40),
+            'desc0'     => $this->post_nullable('desc0', 40)
+        ];
+
+        if ($mode === 'insert') {
+            if ($this->code_model->exists($head_code, $code)) {
+                return $this->json_response([
+                    'status'  => false,
+                    'message' => 'This Code already exists in the selected Head Code.'
+                ], 409);
+            }
+
+            $data['head_code'] = $head_code;
+            $data['code']      = $code;
+
+            $success = $this->code_model->insert($data);
+        } else {
+            $old_head_code = trim((string) $this->input->post('old_head_code', true));
+            $old_code      = trim((string) $this->input->post('old_code', true));
+
+            if ($old_head_code === '' || $old_code === '') {
+                return $this->json_response([
+                    'status'  => false,
+                    'message' => 'Original Code identity is missing.'
+                ], 400);
+            }
+
+            // Keep the composite primary key immutable during edit.
+            if ($old_head_code !== $head_code || $old_code !== $code) {
+                return $this->json_response([
+                    'status'  => false,
+                    'message' => 'Head Code and Code cannot be changed during edit.'
+                ], 400);
+            }
+
+            if (!$this->code_model->exists($old_head_code, $old_code)) {
+                return $this->json_response([
+                    'status'  => false,
+                    'message' => 'Code record no longer exists.'
+                ], 404);
+            }
+
+            $success = $this->code_model->update(
+                $old_head_code,
+                $old_code,
+                $data
+            );
+        }
+
+        if (!$success) {
+            $db_error = $this->db->error();
+
+            return $this->json_response([
+                'status'  => false,
+                'message' => !empty($db_error['message'])
+                    ? $db_error['message']
+                    : 'Unable to save Code.'
+            ], 500);
+        }
+
+        $this->json_response([
+            'status'  => true,
+            'message' => $mode === 'insert'
+                ? 'Code has been created successfully.'
+                : 'Code has been updated successfully.'
+        ]);
     }
 
     /**
-     * AJAX: update
+     * Delete code.
      */
-    public function update()
+    public function delete()
     {
-        $orig_head = $this->input->post('orig_head', TRUE);
-        $orig_code = $this->input->post('orig_code', TRUE);
-
-        if (!$orig_head || !$orig_code) {
-            echo json_encode(['status'=>false,'message'=>'Primary key missing']);
-            return;
+        if ($this->input->method(true) !== 'POST') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Invalid request method.'
+            ], 405);
         }
 
-        $data = $this->input->post(NULL, TRUE);
-        // remove originals from data array
-        unset($data['orig_head'],$data['orig_code']);
+        $head_code = trim((string) $this->input->post('head_code', true));
+        $code      = trim((string) $this->input->post('code', true));
 
-        $ok = $this->Code_model->update($orig_head, $orig_code, $data);
-        echo json_encode(['status'=>$ok, 'message' => $ok ? 'Data berhasil diupdate' : 'Gagal update data']);
+        if ($head_code === '' || $code === '') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Head Code and Code are required.'
+            ], 400);
+        }
+
+        if ($code === '*') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'General Code category header cannot be deleted from this page.'
+            ], 400);
+        }
+
+        if (!$this->code_model->exists($head_code, $code)) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Code not found.'
+            ], 404);
+        }
+
+        $success = $this->code_model->delete($head_code, $code);
+
+        if (!$success) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Unable to delete Code.'
+            ], 500);
+        }
+
+        $this->json_response([
+            'status'  => true,
+            'message' => 'Code has been deleted successfully.'
+        ]);
     }
 
     /**
-     * AJAX: delete
+     * Read optional text field and validate its length.
      */
-    public function remove()
+    private function post_nullable($field, $max_length)
     {
-        $head = $this->input->post('head', TRUE);
-        $code = $this->input->post('code', TRUE);
-        if (!$head || !$code) {
-            echo json_encode(['status'=>false,'message'=>'Invalid key']);
-            return;
+        $value = trim((string) $this->input->post($field, true));
+
+        if ($value === '') {
+            return null;
         }
-        $ok = $this->Code_model->delete($head,$code);
-        echo json_encode(['status'=>$ok,'message'=>$ok ? 'Data dihapus' : 'Gagal menghapus']);
+
+        return mb_substr($value, 0, $max_length, 'UTF-8');
     }
 
     /**
-     * Export Excel (all filtered data)
-     * Requires phpoffice/phpspreadsheet via composer
+     * Standard JSON response.
      */
-    public function export_excel()
+    private function json_response($payload, $http_status = 200)
     {
-        $search = $this->input->get('search', TRUE);
-        $order  = $this->input->get('order', TRUE) ?: 'head_code';
-        $dir    = strtoupper($this->input->get('dir', TRUE)) === 'DESC' ? 'DESC' : 'ASC';
-
-        $rows = $this->Code_model->get_all($search, $order, $dir);
-
-        // load PhpSpreadsheet
-        // composer require phpoffice/phpspreadsheet
-        $this->load->library('Spreadsheet_loader'); // see instructions below
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        // headers
-        $sheet->fromArray(['HEAD_CODE','CODE','CODE_NAME','DESC1','DESC2','USE_YN'], NULL, 'A1');
-
-        $r = 2;
-        foreach ($rows as $row) {
-            $sheet->setCellValue('A'.$r, $row->head_code);
-            $sheet->setCellValue('B'.$r, $row->code);
-            $sheet->setCellValue('C'.$r, $row->code_name);
-            $sheet->setCellValue('D'.$r, $row->desc1);
-            $sheet->setCellValue('E'.$r, $row->desc2);
-            $sheet->setCellValue('F'.$r, $row->use_yn);
-            $r++;
-        }
-
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-        $filename = 'abc_cd_code_export_'.date('Ymd_His').'.xlsx';
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'"');
-        header('Cache-Control: max-age=0');
-
-        $writer->save('php://output');
-    }
-
-    /**
-     * Export PDF (filtered)
-     * Requires dompdf/dompdf via composer
-     */
-    public function export_pdf()
-    {
-        $search = $this->input->get('search', TRUE);
-        $order  = $this->input->get('order', TRUE) ?: 'head_code';
-        $dir    = strtoupper($this->input->get('dir', TRUE)) === 'DESC' ? 'DESC' : 'ASC';
-
-        $rows = $this->Code_model->get_all($search, $order, $dir);
-
-        // create html
-        $html = '<h3>CD CODE Export</h3><table border="1" cellpadding="5" cellspacing="0" width="100%">
-                <thead><tr><th>HEAD_CODE</th><th>CODE</th><th>CODE_NAME</th><th>DESC1</th></tr></thead><tbody>';
-        foreach ($rows as $r) {
-            $html .= '<tr>';
-            $html .= '<td>'.htmlspecialchars($r->head_code).'</td>';
-            $html .= '<td>'.htmlspecialchars($r->code).'</td>';
-            $html .= '<td>'.htmlspecialchars($r->code_name).'</td>';
-            $html .= '<td>'.htmlspecialchars($r->desc1).'</td>';
-            $html .= '</tr>';
-        }
-        $html .= '</tbody></table>';
-
-        // load dompdf (composer require dompdf/dompdf)
-        $this->load->library('Pdf_loader'); // see instructions below
-        $dompdf = new \Dompdf\Dompdf();
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4','landscape');
-        $dompdf->render();
-        $dompdf->stream('abc_cd_code_export_'.date('Ymd_His').'.pdf', ['Attachment'=>1]);
+        return $this->output
+            ->set_status_header($http_status)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode($payload));
     }
 }

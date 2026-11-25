@@ -28,8 +28,50 @@
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
+  <style>
+    .sidebar-mobile-toggle {
+        display: none;
+    }
+
+    @media (max-width: 1199px) {
+        .sidebar-mobile-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1030;
+
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            background: #FFFFFF;
+            color: #3976AD;
+
+            font-size: 22px;
+            box-shadow: 0 3px 12px rgba(36, 59, 83, .08);
+        }
+    }
+  </style>
+
 </head>
 
 <body>
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-       data-sidebar-position="fixed" data-header-position="fixed">
+  <div class="page-wrapper" id="main-wrapper"
+       data-layout="vertical"
+       data-navbarbg="skin6"
+       data-sidebartype="full"
+       data-sidebar-position="fixed"
+       data-header-position="fixed">
+
+    <!-- Mobile Sidebar Toggle -->
+    <button type="button"
+            id="sidebarToggle"
+            class="sidebar-mobile-toggle d-xl-none"
+            aria-label="Open navigation">
+        <i class="bi bi-list"></i>
+    </button>

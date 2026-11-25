@@ -1,120 +1,181 @@
+
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Code_model extends CI_Model {
-
-    protected $table = 'abc_cd_code';
-    protected $primary = ['HEAD_CODE','CODE']; // composite PK
+class Code_model extends CI_Model
+{
+    protected $table = 'cd_code';
 
     public function __construct()
     {
         parent::__construct();
     }
 
+    /**
+     * General Code list.
+     * CODE = '*' is the category/header record.
+     */
     public function get_unique_head()
     {
-        $this->db->select('head_code, code_name');
-        $this->db->group_by('head_code, code_name');
-        $this->db->order_by('head_code', 'ASC');
-        return $this->db->get($this->table)->result();
+        return $this->db
+            ->select('head_code, code, code_name, use_yn')
+            ->where('code', '*')
+            ->order_by('head_code', 'ASC')
+            ->get($this->table)
+            ->result();
     }
 
-    public function get_head_star()
+    /**
+     * Get category header by HEAD_CODE.
+     */
+    public function get_head($head_code)
     {
-        // Ambil HEAD_CODE + CODE_NAME yang CODE = '*'
-        $this->db->select('HEAD_CODE, CODE_NAME');
-        $this->db->where('CODE', '*');
-        $this->db->order_by('HEAD_CODE', 'ASC');
-        return $this->db->get($this->table)->result();
+        return $this->db
+            ->where('head_code', $head_code)
+            ->where('code', '*')
+            ->get($this->table)
+            ->row();
     }
 
-    public function get_data_by_head($head, $limit, $start, $order = 'code', $dir = 'ASC')
-    {
-        $this->db->where('head_code', $head);
+    /**
+     * Get code members by HEAD_CODE.
+     * Excludes CODE = '*'.
+     */
+    public function get_data_by_head(
+        $head_code,
+        $search = '',
+        $limit = 100,
+        $start = 0,
+        $order = 'code',
+        $dir = 'ASC'
+    ) {
+        $allowed_order = [
+            'code',
+            'code_name',
+            'use_yn',
+            'desc1'
+        ];
+
+        if (!in_array($order, $allowed_order, true)) {
+            $order = 'code';
+        }
+
+        $dir = strtoupper($dir) === 'DESC' ? 'DESC' : 'ASC';
+
+        $this->db->where('head_code', $head_code);
+        $this->db->where('code !=', '*');
+
+        if ($search !== '') {
+            $this->db->group_start();
+            $this->db->like('code', $search);
+            $this->db->or_like('code_name', $search);
+            $this->db->or_like('desc1', $search);
+            $this->db->or_like('desc2', $search);
+            $this->db->group_end();
+        }
+
         $this->db->order_by($order, $dir);
-        return $this->db->get($this->table, (int)$limit, (int)$start)->result();
+
+        return $this->db
+            ->get($this->table, (int) $limit, (int) $start)
+            ->result();
     }
 
-    public function count_data_by_head($head)
+    public function count_data_by_head($head_code, $search = '')
     {
-        $this->db->where('head_code', $head);
+        $this->db->where('head_code', $head_code);
+        $this->db->where('code !=', '*');
+
+        if ($search !== '') {
+            $this->db->group_start();
+            $this->db->like('code', $search);
+            $this->db->or_like('code_name', $search);
+            $this->db->or_like('desc1', $search);
+            $this->db->or_like('desc2', $search);
+            $this->db->group_end();
+        }
+
         return $this->db->count_all_results($this->table);
     }
 
     /**
-     * Get filtered data with order & limit
+     * Get one record using composite primary key.
      */
-    public function get_data($limit, $start, $search = '', $order = 'head_code', $dir = 'ASC')
+    public function get_by_pk($head_code, $code)
     {
-        if ($search !== '') {
-            $this->db->group_start();
-            $this->db->like('head_code', $search);
-            $this->db->or_like('code', $search);
-            $this->db->or_like('code_name', $search);
-            $this->db->or_like('desc1', $search);
-            $this->db->group_end();
-        }
-
-        $this->db->order_by($order, $dir);
-        return $this->db->get($this->table, (int)$limit, (int)$start)->result();
+        return $this->db
+            ->where('head_code', $head_code)
+            ->where('code', $code)
+            ->get($this->table)
+            ->row();
     }
 
-    public function count_data($search = '')
+    /**
+     * Check whether composite key already exists.
+     */
+    public function exists($head_code, $code)
     {
-        if ($search !== '') {
-            $this->db->group_start();
-            $this->db->like('head_code', $search);
-            $this->db->or_like('code', $search);
-            $this->db->or_like('code_name', $search);
-            $this->db->or_like('desc1', $search);
-            $this->db->group_end();
-        }
-        return $this->db->count_all_results($this->table);
+        return $this->db
+            ->where('head_code', $head_code)
+            ->where('code', $code)
+            ->count_all_results($this->table) > 0;
     }
 
     public function insert($data)
     {
-        return $this->db->insert('abc_cd_code', $data);
+        return $this->db->insert($this->table, $data);
     }
 
-    public function get_by_pk($head_code, $code)
-    {
-        return $this->db->where('head_code', $head_code)
-                        ->where('code', $code)
-                        ->get('abc_cd_code')
-                        ->row();
-    }
-
+    /**
+     * Update non-key fields only.
+     */
     public function update($head_code, $code, $data)
     {
-        return $this->db->where(['head_code'=>$head_code,'code'=>$code])->update($this->table, $data);
+        return $this->db
+            ->where('head_code', $head_code)
+            ->where('code', $code)
+            ->update($this->table, $data);
     }
 
     public function delete($head_code, $code)
     {
-        return $this->db->where(['head_code'=>$head_code,'code'=>$code])->delete($this->table);
+        return $this->db
+            ->where('head_code', $head_code)
+            ->where('code', $code)
+            ->delete($this->table);
     }
 
     /**
-     * Get all (used for export) with optional search & order
+     * Check if category still has member codes.
      */
-    public function get_all($search = '', $order = 'head_code', $dir = 'ASC')
+    public function has_members($head_code)
     {
+        return $this->db
+            ->where('head_code', $head_code)
+            ->where('code !=', '*')
+            ->count_all_results($this->table) > 0;
+    }
+
+    /**
+     * Search all records, excluding category header records.
+     */
+    public function get_all($search = '')
+    {
+        $this->db->where('code !=', '*');
+
         if ($search !== '') {
             $this->db->group_start();
             $this->db->like('head_code', $search);
             $this->db->or_like('code', $search);
             $this->db->or_like('code_name', $search);
+            $this->db->or_like('desc1', $search);
             $this->db->group_end();
         }
-        $this->db->order_by($order, $dir);
-        return $this->db->get($this->table)->result();
-    }
 
-    public function get_by_head($head)
-    {
-        return $this->db->where('head_code', $head)
-                        ->order_by('code_name')
-                        ->get('abc_cd_code')->result();
+        return $this->db
+            ->order_by('head_code', 'ASC')
+            ->order_by('code', 'ASC')
+            ->get($this->table)
+            ->result();
     }
 }

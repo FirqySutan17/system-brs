@@ -1,738 +1,1457 @@
 
-<style>
-.general-code-page{--gc-primary:#2864f0;--gc-ink:#17233b;--gc-muted:#66758f;--gc-border:#e5ebf4;color:var(--gc-ink);padding-bottom:24px}
-.general-code-page .gc-hero{display:flex;align-items:center;gap:15px;padding:21px 24px;border:1px solid #e5ebf6;border-radius:16px;background:linear-gradient(115deg,#fff,#f8faff 55%,#edf3ff);box-shadow:0 7px 24px #1b34600b;margin:80px 0 16px}
-.general-code-page .gc-hero-icon{width:50px;height:50px;flex:0 0 50px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#e6eeff;color:var(--gc-primary);font-size:21px}
-.general-code-page .gc-hero h1{font-size:23px;font-weight:750;letter-spacing:-.4px;margin:0 0 4px}
-.general-code-page .gc-hero p{font-size:13px;color:var(--gc-muted);margin:0}
-.general-code-page>.content>.container-fluid>.card{border:1px solid var(--gc-border);border-radius:16px;box-shadow:0 9px 28px #1b34600e;overflow:hidden}
-.general-code-page .card-body{padding:20px}
-.general-code-page .card-title{display:none}
-.general-code-page #btnAdd{border-radius:9px;padding:9px 15px;font-size:13px;font-weight:650;background:var(--gc-primary);border-color:var(--gc-primary);box-shadow:0 5px 12px #2864f02e}
-.general-code-page .cct-wrapper{grid-template-columns:minmax(230px,2fr) minmax(0,6fr);gap:16px}
-.general-code-page .cct-panel{border:1px solid var(--gc-border);border-radius:12px;background:#fff;min-width:0}
-.general-code-page .cct-panel table{width:100%;margin-bottom:0;border-collapse:separate;border-spacing:0}
-.general-code-page .cct-panel th{position:sticky;top:0;z-index:1;background:#f7f9fd;color:#63728b;border:0;border-bottom:1px solid #e7edf6;font-size:11px;text-transform:uppercase;letter-spacing:.3px;font-weight:700;padding:12px 13px;white-space:nowrap}
-.general-code-page .cct-panel td{padding:12px 13px!important;border-bottom:1px solid #edf1f7;font-size:12.5px;color:var(--gc-ink);vertical-align:middle!important}
-.general-code-page .cct-panel tbody tr:last-child td{border-bottom:0}
-.general-code-page #headcode-body tr{cursor:pointer;transition:background .15s}
-.general-code-page #headcode-body tr:hover{background:#f1f5ff}
-.general-code-page #headcode-body tr.active-row{background:#e7eeff!important}
-.general-code-page #headcode-body tr.active-row td{color:#214fbd!important;font-weight:700}
-.general-code-page #mainTable td:last-child{white-space:nowrap}
-.general-code-page #mainTable .btn{border-radius:7px;font-size:11.5px;padding:5px 9px}
-.general-code-page #mainTable .btn-warning{background:#fff4d6;border-color:#f6df9e;color:#8a5b00}
-.general-code-page #mainTable .btn-danger{background:#fff0f0;border-color:#ffd2d2;color:#b42332}
-.general-code-page #info{font-size:12px;color:var(--gc-muted)}
-.general-code-page #pagination .page-link{font-size:12px;color:var(--gc-primary);border-color:var(--gc-border)}
-.general-code-page .form-control,.general-code-page .select2-container--default .select2-selection--single{border:1px solid #dce4ef;border-radius:8px;min-height:40px;box-shadow:none;font-size:13px}
-.general-code-page .form-control:focus{border-color:#8aafff;box-shadow:0 0 0 3px #2864f017}
-.general-code-page .modal-content{border:1px solid #e5ebf4;border-radius:15px;overflow:hidden;box-shadow:0 18px 50px #10234424}
-.general-code-page .modal-header{background:#fbfcff;border-bottom:1px solid #edf1f7;padding:17px 21px}
-.general-code-page .modal-title{font-weight:750;font-size:16px;color:var(--gc-ink)}
-.general-code-page .modal-body{padding:22px}
-.general-code-page .modal-footer{background:#fbfcff;border-top:1px solid #edf1f7;padding:14px 21px}
-.general-code-page .modal-footer .btn{border-radius:8px;font-size:13px;padding:8px 14px}
-.general-code-page .form-label{font-size:12.5px;font-weight:650;color:#26364f}
-.general-code-page .form-check-input:checked{background-color:var(--gc-primary);border-color:var(--gc-primary)}
-@media(max-width:767px){.general-code-page .gc-hero{padding:17px;margin-top:30px}.general-code-page .gc-hero h1{font-size:19px}.general-code-page .card-body{padding:14px}.general-code-page .cct-wrapper{grid-template-columns:1fr}.general-code-page .cct-panel{overflow-x:auto}.general-code-page .cct-panel table{min-width:350px}}
-</style>
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+?>
 
 <style>
-    .cct-wrapper {
-        display: grid;
-        grid-template-columns: 2fr 6fr;
-        gap: 20px;
+/* ==========================================
+   CODE MASTER
+========================================== */
+
+.code-page {
+    padding: 25px;
+    min-height: 100vh;
+    background: #F5F8FC;
+    color: #334E68;
+}
+
+.code-page * {
+    box-sizing: border-box;
+}
+
+.code-page .page-heading {
+    margin-bottom: 22px;
+}
+
+.code-page .page-heading h3 {
+    margin: 0;
+    color: #243B53;
+    font-size: 22px;
+    font-weight: 750;
+}
+
+.code-page .page-heading p {
+    margin: 6px 0 0;
+    color: #8493A5;
+    font-size: 12px;
+}
+
+.code-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 18px;
+    padding: 13px 16px;
+    background: #FFFFFF;
+    border: 1px solid #E7EDF4;
+    border-radius: 13px;
+    box-shadow: 0 3px 12px rgba(36,59,83,.025);
+}
+
+.code-toolbar .toolbar-divider {
+    width: 1px;
+    height: 27px;
+    background: #E2E8F0;
+    margin: 0 4px;
+}
+
+.code-toolbar .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.btn-code-primary {
+    color: #FFFFFF;
+    background: #3976AD;
+    border: 1px solid #3976AD;
+}
+
+.btn-code-primary:hover {
+    color: #FFFFFF;
+    background: #2F6596;
+}
+
+.btn-code-light {
+    color: #52677D;
+    background: #F7F9FC;
+    border: 1px solid #E2E8F0;
+}
+
+.btn-code-light:hover {
+    color: #3976AD;
+    background: #EAF2F9;
+    border-color: #D5E5F3;
+}
+
+.btn-code-danger {
+    color: #D62828;
+    background: #FFF5F5;
+    border: 1px solid #FCE0E0;
+}
+
+.btn-code-danger:hover {
+    color: #B91C1C;
+    background: #FEECEC;
+}
+
+.code-layout {
+    display: grid;
+    grid-template-columns: 290px minmax(0, 1fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+.code-card {
+    background: #FFFFFF;
+    border: 1px solid #E7EDF4;
+    border-radius: 13px;
+    box-shadow: 0 3px 12px rgba(36,59,83,.025);
+    overflow: hidden;
+    min-width: 0;
+}
+
+.code-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 17px 18px;
+    border-bottom: 1px solid #EDF1F5;
+}
+
+.code-card-title {
+    color: #243B53;
+    font-size: 13px;
+    font-weight: 750;
+    margin: 0;
+}
+
+.code-card-subtitle {
+    color: #94A3B8;
+    font-size: 10px;
+    margin: 4px 0 0;
+}
+
+.code-card-body {
+    padding: 16px;
+}
+
+.code-search {
+    position: relative;
+    margin-bottom: 13px;
+}
+
+.code-search i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94A3B8;
+    font-size: 13px;
+}
+
+.code-search input {
+    width: 100%;
+    height: 38px;
+    padding: 8px 12px 8px 35px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    background: #FAFCFE;
+    color: #334E68;
+    font-size: 11px;
+    outline: none;
+}
+
+.code-search input:focus,
+.code-form-control:focus {
+    border-color: #8CB4D8;
+    box-shadow: 0 0 0 3px rgba(57,118,173,.09);
+    outline: none;
+}
+
+.code-head-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 650px;
+    overflow-y: auto;
+    padding-right: 3px;
+}
+
+.code-head-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 12px;
+    text-align: left;
+    background: #FFFFFF;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.code-head-item:hover {
+    background: #F5F8FC;
+}
+
+.code-head-item.active {
+    background: #EAF2F9;
+    border-color: #D8E8F6;
+}
+
+.code-head-code {
+    display: block;
+    color: #3976AD;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.code-head-name {
+    display: block;
+    margin-top: 4px;
+    color: #64748B;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.code-head-item.active .code-head-name {
+    color: #334E68;
+}
+
+.code-head-arrow {
+    color: #A0ADBA;
+    font-size: 12px;
+}
+
+.code-head-item.active .code-head-arrow {
+    color: #3976AD;
+}
+
+.code-head-count {
+    min-width: 23px;
+    padding: 3px 6px;
+    text-align: center;
+    color: #64748B;
+    background: #F1F5F9;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.code-right-panel {
+    min-width: 0;
+}
+
+.code-list-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.code-selected-heading {
+    color: #243B53;
+    font-size: 15px;
+    font-weight: 750;
+    margin: 0;
+}
+
+.code-selected-caption {
+    color: #94A3B8;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.code-table-wrap {
+    overflow-x: auto;
+}
+
+.code-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+}
+
+.code-table th {
+    padding: 12px 14px;
+    color: #8493A5;
+    background: #F8FAFC;
+    border-bottom: 1px solid #E8EEF4;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.code-table td {
+    padding: 12px 14px;
+    color: #52677D;
+    border-bottom: 1px solid #F0F3F7;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.code-table tbody tr {
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.code-table tbody tr:hover {
+    background: #F7FAFD;
+}
+
+.code-table tbody tr.selected {
+    background: #EFF6FC;
+}
+
+.code-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.code-table .code-value {
+    color: #3976AD;
+    font-weight: 750;
+}
+
+.code-table .code-name {
+    color: #334E68;
+    font-weight: 650;
+}
+
+.code-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.code-status.active {
+    color: #25865E;
+    background: #EAF7F0;
+}
+
+.code-status.inactive {
+    color: #B7791F;
+    background: #FFF6E8;
+}
+
+.code-status::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.code-empty {
+    padding: 55px 20px;
+    text-align: center;
+    color: #94A3B8;
+}
+
+.code-empty i {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 28px;
+    color: #C4D0DC;
+}
+
+.code-empty strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #52677D;
+    font-size: 12px;
+}
+
+.code-empty span {
+    font-size: 10px;
+}
+
+.code-loading {
+    padding: 35px;
+    text-align: center;
+    color: #8493A5;
+    font-size: 11px;
+}
+
+/* FORM */
+
+.code-form-panel {
+    display: none;
+}
+
+.code-form-panel.show {
+    display: block;
+}
+
+.code-list-panel.hide {
+    display: none;
+}
+
+.code-form-section {
+    padding: 17px;
+    background: #FFFFFF;
+    border: 1px solid #E7EDF4;
+    border-radius: 12px;
+}
+
+.code-form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 17px;
+    color: #243B53;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.code-form-section-title i {
+    color: #3976AD;
+    font-size: 15px;
+}
+
+.code-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px 18px;
+}
+
+.code-form-group {
+    min-width: 0;
+}
+
+.code-form-group.full {
+    grid-column: 1 / -1;
+}
+
+.code-form-label {
+    display: block;
+    margin-bottom: 7px;
+    color: #52677D;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.code-form-label .required {
+    color: #D62828;
+}
+
+.code-form-control {
+    display: block;
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 11px;
+    color: #334E68;
+    background: #FAFCFE;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 11px;
+    transition: .2s ease;
+}
+
+.code-form-control:disabled,
+.code-form-control[readonly] {
+    color: #64748B;
+    background: #F1F5F9;
+    cursor: not-allowed;
+}
+
+textarea.code-form-control {
+    min-height: 75px;
+    resize: vertical;
+}
+
+.code-status-switch {
+    display: flex;
+    gap: 8px;
+}
+
+.code-status-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 13px;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    color: #64748B;
+    background: #FFFFFF;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.code-status-option:has(input:checked) {
+    border-color: #A9DCC5;
+    background: #EFFAF4;
+    color: #25865E;
+}
+
+.code-status-option input {
+    accent-color: #269B70;
+}
+
+.code-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 17px;
+}
+
+.code-form-actions .btn {
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.code-record-count {
+    color: #8493A5;
+    font-size: 10px;
+}
+
+@media(max-width: 1199px) {
+    .code-page {
+        padding: 20px;
     }
 
-    .cct-panel {
-        overflow: hidden;
-        background: #fff;
+    .code-layout {
+        grid-template-columns: 250px minmax(0, 1fr);
+    }
+}
+
+@media(max-width: 767px) {
+    .code-page {
+        padding: 15px;
     }
 
-    .cct-panel-header {
-        background: #007bff;
-        color: #fff;
-        font-weight: 700;
+    .code-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .code-head-list {
+        max-height: 220px;
+    }
+
+    .code-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .code-form-group.full {
+        grid-column: auto;
+    }
+
+    .code-toolbar {
+        gap: 6px;
         padding: 10px;
-        text-align: center;
     }
 
-    .cct-panel table {
-        border-collapse: separate;
-        border-spacing: 0;
+    .code-toolbar .btn {
+        padding: 8px 10px;
     }
-
-    .cct-panel th {
-        text-align: center;
-        position: sticky;
-        top: 0;
-        background: #f4f6f9;
-        border: 1px solid #000;
-    }
-
-    .cct-panel td {
-        padding: 8px !important;
-        vertical-align: middle;
-    }
-
-    #headcode-body tr {
-        cursor: pointer;
-    }
-
-    #headcode-body tr:hover {
-        background: #e9f3ff;
-    }
-
-    .active-row {
-        background: #f8971d !important;
-    }
-
-    .active-row td {
-        color: #fff !important;
-    }
-
-    .detail-row {
-        border: 2px solid #efefef !important;
-        vertical-align: middle !important;
-    }
-    /* responsive */
-    @media(max-width: 768px){
-        .cct-wrapper {
-            grid-template-columns: 1fr;
-        }
-    }
+}
 </style>
 
-<div class="content-wrapper general-code-page"><section class="content pt-3"><div class="container-fluid">
-    <div class="gc-hero"><div class="gc-hero-icon"><i class="fas fa-code"></i></div><div><h1>General Code</h1><p>Kelola master general code dan detail kode dalam satu tampilan.</p></div></div>
-    <div class="card w-100">
-        <div class="card-body">
 
-            <h5 class="card-title fw-semibold mb-4">GENERAL CODE - MASTER</h5>
+<div class="code-page">
 
-            <!-- SEARCH + ADD ROW -->
-            <div class="row mb-3" style="margin-top: 20px">
-                <div class="col-md-8 col-sm-12">
-                    <!-- <input id="search" type="text" class="form-control" placeholder="Cari code..." /> -->
+    <!-- PAGE HEADING -->
+    <div class="page-heading">
+        <h3>Code Master</h3>
+        <p>Manage general codes and their reference values</p>
+    </div>
+
+
+    <!-- TOOLBAR -->
+    <div class="code-toolbar">
+
+        <button type="button" class="btn btn-code-light" id="btnQuery">
+            <i class="bi bi-search"></i>
+            Query
+        </button>
+
+        <button type="button" class="btn btn-code-primary" id="btnNew">
+            <i class="bi bi-plus-lg"></i>
+            New
+        </button>
+
+        <button type="button" class="btn btn-code-danger" id="btnDelete" disabled>
+            <i class="bi bi-trash3"></i>
+            Delete
+        </button>
+
+        <button type="button" class="btn btn-code-light" id="btnSave" disabled>
+            <i class="bi bi-floppy"></i>
+            Save
+        </button>
+
+        <div class="toolbar-divider"></div>
+
+        <span class="code-record-count" id="toolbarInfo">
+            Select a General Code to get started
+        </span>
+
+    </div>
+
+
+    <!-- MAIN LAYOUT -->
+    <div class="code-layout">
+
+        <!-- LEFT PANEL -->
+        <div class="code-card">
+
+            <div class="code-card-header">
+                <div>
+                    <h5 class="code-card-title">General Code</h5>
+                    <p class="code-card-subtitle">Available code categories</p>
                 </div>
-                <div class="col-md-4 col-sm-12 text-end mt-2 mt-md-0">
-                    <div class="btn-group ">
-                        <!-- <button class="btn btn-outline-secondary" id="exportExcel">Export Excel</button>
-                        <button class="btn btn-outline-secondary" id="exportPdf">Export PDF</button> -->
+
+                <span class="code-head-count" id="headCount">0</span>
+            </div>
+
+            <div class="code-card-body">
+
+                <div class="code-search">
+                    <i class="bi bi-search"></i>
+                    <input type="text"
+                           id="headSearch"
+                           placeholder="Search category...">
+                </div>
+
+                <div class="code-head-list" id="headList">
+                    <div class="code-loading">
+                        Loading categories...
                     </div>
-                    <button id="btnAdd" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#modalAdd">
-                        <i class="ti ti-plus"></i> Tambah
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- RIGHT PANEL -->
+        <div class="code-right-panel">
+
+            <!-- CODE LIST -->
+            <div class="code-card code-list-panel" id="codeListPanel">
+
+                <div class="code-card-header">
+                    <div>
+                        <h5 class="code-card-title">Code List</h5>
+                        <p class="code-card-subtitle" id="selectedHeadInfo">
+                            Select a category from the left panel
+                        </p>
+                    </div>
+
+                    <span class="code-head-count" id="codeCount">0</span>
+                </div>
+
+                <div class="code-card-body">
+
+                    <div class="code-list-toolbar">
+
+                        <div class="code-search mb-0" style="width:280px;max-width:100%;">
+                            <i class="bi bi-search"></i>
+                            <input type="text"
+                                   id="codeSearch"
+                                   placeholder="Search code or name..."
+                                   disabled>
+                        </div>
+
+                        <button type="button"
+                                class="btn btn-code-primary btn-sm"
+                                id="btnNewCode"
+                                disabled>
+                            <i class="bi bi-plus-lg"></i>
+                            Add Code
+                        </button>
+
+                    </div>
+
+                    <div class="code-table-wrap" id="codeTableWrap">
+                        <div class="code-empty">
+                            <i class="bi bi-list-ul"></i>
+                            <strong>No category selected</strong>
+                            <span>Select a General Code to display its codes.</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- FORM PANEL -->
+            <div class="code-card code-form-panel" id="codeFormPanel">
+
+                <div class="code-card-header">
+
+                    <div>
+                        <h5 class="code-card-title" id="formTitle">
+                            New Code
+                        </h5>
+
+                        <p class="code-card-subtitle" id="formSubtitle">
+                            Enter code information
+                        </p>
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-code-light btn-sm"
+                            id="btnCloseForm">
+                        <i class="bi bi-arrow-left"></i>
+                        Back to List
                     </button>
-                </div>
-            </div>
 
-            <div class="cct-wrapper">
-                <!-- LEFT : HEAD CODE -->
-                <div class="cct-panel">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Head</th>
-                                <th>Name</th>
-                            </tr>
-                        </thead>
-                        <tbody id="headcode-body">
-                            <!-- AUTO GENERATED -->
-                        </tbody>
-                    </table>
                 </div>
 
-                <!-- RIGHT : DETAIL -->
-                <div class="cct-panel">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover text-nowrap mb-0 align-middle" id="mainTable">
-                            <thead>
-                                <tr>
-                                    <th data-order="code">Code</th>
-                                    <th data-order="code_name">Code Name</th>
-                                    <th>Deskripsi</th>
-                                    <th>Status</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body">
-                                <!-- AJAX EXISTING -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                <div class="code-card-body">
 
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div id="info"></div>
-                <div id="pagination"></div>
-            </div>
-        </div>
-    </div>
-</div></section></div>
+                    <form id="codeForm" autocomplete="off">
 
-<!-- MODAL ADD -->
-<div class="modal fade" id="modalAdd" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <form id="formAdd">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">CD Code - Tambah</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+                        <input type="hidden" name="mode" id="formMode">
+                        <input type="hidden" name="old_head_code" id="oldHeadCode">
+                        <input type="hidden" name="old_code" id="oldCode">
 
-            <div class="modal-body">
-                <div class="row g-2">
-                    <div class="col-md-6 mb-1">
-                        <label class="form-label">General Code *</label>
-                        <select id="headAddSelect" class="form-control" required></select>
-                        <input type="hidden" id="hiddenHeadAdd" name="head_code">
-                    </div>
+                        <div class="row g-3">
 
-                    <div class="col-md-6 mb-1">
-                        <label class="form-label">Code *</label>
-                        <select id="codeAddSelect" class="form-control" required></select>
-                        <input type="hidden" id="hiddenCodeAdd" name="code">
-                    </div>
+                            <!-- LEFT FORM COLUMN -->
+                            <div class="col-lg-6">
 
-                    <div class="col-md-12 mb-1">
-                        <label class="form-label">Nama *</label>
-                        <input name="code_name" class="form-control" placeholder="Input disini.." required>
-                    </div>
-                </div>
+                                <div class="code-form-section h-100">
 
-                <div class="row mt-2 mb-1">
-                    <div class="col-md-8">
-                        <label class="form-label">Deskripsi</label>
-                        <input name="desc1" class="form-control" placeholder="Input disini..">
-                    </div>
+                                    <div class="code-form-section-title">
+                                        <i class="bi bi-card-text"></i>
+                                        Basic Information
+                                    </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label">Status</label>
-                        <div class="form-check form-switch mt-2">
-                            <input class="form-check-input" type="checkbox" id="useYnToggleAdd">
-                            <label class="form-check-label" id="useYnLabelAdd" style="margin-top: 4px; margin-left: 10px;">NON-AKTIF</label>
+                                    <div class="code-form-grid">
+
+                                        <div class="code-form-group">
+                                            <label class="code-form-label">
+                                                Head Code <span class="required">*</span>
+                                            </label>
+
+                                            <input type="text"
+                                                   class="code-form-control"
+                                                   name="head_code"
+                                                   id="formHeadCode"
+                                                   maxlength="8"
+                                                   required
+                                                   readonly>
+                                        </div>
+
+                                        <div class="code-form-group">
+                                            <label class="code-form-label">
+                                                Code <span class="required">*</span>
+                                            </label>
+
+                                            <input type="text"
+                                                   class="code-form-control"
+                                                   name="code"
+                                                   id="formCode"
+                                                   maxlength="10"
+                                                   required>
+                                        </div>
+
+                                        <div class="code-form-group full">
+                                            <label class="code-form-label">
+                                                Code Name <span class="required">*</span>
+                                            </label>
+
+                                            <input type="text"
+                                                   class="code-form-control"
+                                                   name="code_name"
+                                                   id="formCodeName"
+                                                   maxlength="40"
+                                                   required>
+                                        </div>
+
+                                        <div class="code-form-group full">
+                                            <label class="code-form-label">
+                                                Usage Status
+                                            </label>
+
+                                            <div class="code-status-switch">
+
+                                                <label class="code-status-option">
+                                                    <input type="radio"
+                                                           name="use_yn"
+                                                           value="Y"
+                                                           checked>
+                                                    Active
+                                                </label>
+
+                                                <label class="code-status-option">
+                                                    <input type="radio"
+                                                           name="use_yn"
+                                                           value="N">
+                                                    Inactive
+                                                </label>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="code-form-group full">
+                                            <label class="code-form-label">
+                                                Description 1
+                                            </label>
+
+                                            <input type="text"
+                                                   class="code-form-control"
+                                                   name="desc1"
+                                                   maxlength="40">
+                                        </div>
+
+                                        <div class="code-form-group full">
+                                            <label class="code-form-label">
+                                                Description 2
+                                            </label>
+
+                                            <input type="text"
+                                                   class="code-form-control"
+                                                   name="desc2"
+                                                   maxlength="40">
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <!-- RIGHT FORM COLUMN -->
+                            <div class="col-lg-6">
+
+                                <div class="code-form-section h-100">
+
+                                    <div class="code-form-section-title">
+                                        <i class="bi bi-card-list"></i>
+                                        Additional Information
+                                    </div>
+
+                                    <div class="code-form-grid">
+
+                                        <?php
+                                        $description_fields = [
+                                            'desc3' => 40,
+                                            'desc4' => 200,
+                                            'desc5' => 40,
+                                            'desc6' => 40,
+                                            'desc7' => 40,
+                                            'desc8' => 40,
+                                            'desc9' => 40,
+                                            'desc0' => 40
+                                        ];
+                                        ?>
+
+                                        <?php foreach ($description_fields as $field => $max): ?>
+
+                                            <div class="code-form-group <?= $field === 'desc4' ? 'full' : ''; ?>">
+
+                                                <label class="code-form-label">
+                                                    Description <?= substr($field, 4); ?>
+                                                </label>
+
+                                                <?php if ($field === 'desc4'): ?>
+
+                                                    <textarea class="code-form-control"
+                                                              name="<?= $field; ?>"
+                                                              maxlength="<?= $max; ?>"
+                                                              rows="3"></textarea>
+
+                                                <?php else: ?>
+
+                                                    <input type="text"
+                                                           class="code-form-control"
+                                                           name="<?= $field; ?>"
+                                                           maxlength="<?= $max; ?>">
+
+                                                <?php endif; ?>
+
+                                            </div>
+
+                                        <?php endforeach; ?>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
                         </div>
-                        <input type="hidden" name="use_yn" id="useYnValueAdd" value="N">
-                    </div>
-                </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-            </div>
-        </div>
-        </form>
-    </div>
-</div>
+                        <div class="code-form-actions">
 
-<!-- MODAL EDIT -->
-<div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <form id="formEdit">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">CD Code - Edit</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" ></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" name="orig_head" />
-                <input type="hidden" name="orig_code" />
-                <div class="row g-2">
-                    <div class="col-md-6 mb-1">
-                        <label class="form-label">General Code *</label>
-                        <select name="head_code" id="headEditSelect" class="form-control" disabled></select>
-                        <input type="hidden" id="hiddenHeadEdit" name="head_code">
-                    </div>
+                            <button type="button"
+                                    class="btn btn-code-light"
+                                    id="btnCancelForm">
+                                Cancel
+                            </button>
 
-                    <div class="col-md-6 mb-1">
-                        <label class="form-label">Code *</label>
-                        <select name="code" id="codeEditSelect" class="form-control"></select>
-                        <input type="hidden" id="hiddenCodeEdit" name="code">
-                    </div>
+                            <button type="submit"
+                                    class="btn btn-code-primary"
+                                    id="btnSubmitForm">
+                                <i class="bi bi-floppy me-1"></i>
+                                Save Code
+                            </button>
 
-                    <div class="col-md-12 mb-1">
-                        <label class="form-label">Nama *</label>
-                        <input name="code_name" class="form-control" required>
-                    </div>
-                </div>
-                <div class="row mt-2 mb-1">
-                    <div class="col-md-8">
-                        <label class="form-label">Deskripsi</label>
-                        <input name="desc1" class="form-control">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Status</label>
-                        <div class="form-check form-switch mt-2">
-                            <input class="form-check-input" type="checkbox" id="useYnToggleEdit">
-                            <label class="form-check-label" id="useYnLabelEdit" style="margin-top: 4px; margin-left: 10px;">NON-AKTIF</label>
                         </div>
-                        <input type="hidden" name="use_yn" id="useYnValueEdit">
-                    </div>
+
+                    </form>
+
                 </div>
             </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            <button type="submit" class="btn btn-primary">Update</button>
-            </div>
+
         </div>
-        </form>
+
     </div>
+
 </div>
 
-
-<!-- MODAL DETAIL -->
-<div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title">Detail CD Code</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" ></button>
-            </div>
-            <div class="modal-body" id="detailBody">
-                <!-- filled by AJAX -->
-                Loading...
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
-    function buildHeadCode(rows) {
-        let html = '';
-        rows.forEach(r => {
-            html += `
-                <tr class="headcode-row" data-head="${r.HEAD_CODE}">
-                    <td class="text-center" style="vertical-align: center">${r.HEAD_CODE}</td>
-                    <td class="text-center" style="vertical-align: center">${r.CODE_NAME}</td>
-                </tr>
-            `;
-        });
+(function () {
+    'use strict';
 
-        $('#headcode-body').html(html);
-    }
+    const BASE_URL = '<?= rtrim(base_url(), '/'); ?>/';
 
-    function loadHeadCodePanel() {
-        $.get("<?= base_url('code/get_head_code_panel'); ?>", function(res){
-            let data = res;
-            if(typeof res === 'string') data = JSON.parse(res);
-            buildHeadCode(data);
-
-            // 🔹 AUTO SELECT baris pertama
-            if(data.length > 0){
-                const firstHead = data[0].HEAD_CODE;
-                state.head = firstHead;
-
-                // tandai row pertama aktif
-                $('#headcode-body tr.headcode-row').first().addClass('active-row');
-
-                // load panel kanan sesuai HEAD_CODE pertama
-                loadPage(1);
-            }
-
-        }, 'json');
-    }
-
-    $(document).ready(function(){
-        loadHeadCodePanel(); // load panel kiri saat page ready
-
-        // klik row untuk filter tabel kanan
-        $(document).on('click', '.headcode-row', function () {
-            $('.headcode-row').removeClass('active-row');
-            $(this).addClass('active-row');
-
-            let head = $(this).data('head');
-            state.search = head; // set search untuk tabel kanan
-            state.page = 1;
-            loadPage(1); // reload tabel kanan
-        });
-    });
-
-    // $(document).on('click', '.headcode-row', function () {
-    //     $('.headcode-row').removeClass('active-row');
-    //     $(this).addClass('active-row');
-
-    //     let head = $(this).data('head');
-
-    //     // filter via existing mechanism
-    //     state.search = head;
-    //     state.page = 1;
-    //     loadPage(1);
-    // });
-    
-    var state = {
-        page: 1,
-        limit: 10,
-        order: 'head_code',
-        dir: 'ASC',
-        search: ''
+    const URLS = {
+        heads: BASE_URL + 'code/get_heads',
+        codes: BASE_URL + 'code/get_codes',
+        detail: BASE_URL + 'code/get_detail',
+        save: BASE_URL + 'code/save',
+        delete: BASE_URL + 'code/delete'
     };
 
-    $(function(){
-        // debounce search input
-        let timer = null;
-        $('#search').on('keyup', function(){
-            clearTimeout(timer);
-            timer = setTimeout(function(){
-                state.search = $('#search').val();
-                state.page = 1;
-                loadPage(1);
-            }, 350);
-        });
+    const headList = document.getElementById('headList');
+    const headSearch = document.getElementById('headSearch');
+    const codeSearch = document.getElementById('codeSearch');
 
-        // initial load
-        loadPage(1);
+    const codeTableWrap = document.getElementById('codeTableWrap');
+    const codeListPanel = document.getElementById('codeListPanel');
+    const codeFormPanel = document.getElementById('codeFormPanel');
 
-        // INIT ADD SELECT2
-        $('#headAddSelect').select2({
-            tags: true,
-            placeholder: 'Pilih atau Input GENERAL CODE',
-            width: '100%',
-            dropdownParent: $('#modalAdd'),
-            ajax: {
-                url: '<?= base_url("code/get_head_code") ?>',
-                dataType: 'json',
-                processResults: function(data){
-                    return { results: data };
-                }
-            }
-        }).on('select2:select', function(e){
-            let val = e.params.data.text.toUpperCase();
-            $('#hiddenHeadAdd').val(val);
+    const codeForm = document.getElementById('codeForm');
 
-            // Reset CODE
-            $('#codeAddSelect').val(null).trigger('change');
-            $('#hiddenCodeAdd').val('');
-            $('#codeAddSelect').data('head-code', val);
-        });
+    const btnNew = document.getElementById('btnNew');
+    const btnNewCode = document.getElementById('btnNewCode');
+    const btnSave = document.getElementById('btnSave');
+    const btnDelete = document.getElementById('btnDelete');
 
-        $('#codeAddSelect').select2({
-            tags: true,
-            placeholder: 'Pilih GENERAL CODE terlebih dahulu..',
-            width: '100%',
-            dropdownParent: $('#modalAdd'),
-            ajax: {
-                url: '<?= base_url("code/get_code_by_head") ?>',
-                dataType: 'json',
-                delay: 250,
-                data: function(params){
-                    return {
-                        head: $('#codeAddSelect').data('head-code'),
-                        q: params.term
-                    };
-                },
-                processResults: function(data){
-                    return { results: data };
-                }
-            }
-        }).on('select2:select', function(e){
-            $('#hiddenCodeAdd').val(e.params.data.text.toUpperCase());
-        });
+    let heads = [];
+    let selectedHead = '';
+    let selectedCode = '';
+    let currentRows = [];
+    let currentMode = '';
+    let searchTimer = null;
 
-        // INIT EDIT SELECT2
-        $('#headEditSelect').select2({
-            tags: true,
-            placeholder: 'Pilih HEAD CODE',
-            width: '100%'
-        });
-
-        $('#codeEditSelect').select2({
-            tags: true,
-            placeholder: 'Pilih atau input CODE',
-            width: '100%',
-            dropdownParent: $('#modalEdit'),
-        });
-
-
-        // handle header sort click
-        $('#mainTable thead').on('click', 'th[data-order]', function(){
-            var col = $(this).data('order');
-            if (state.order === col) {
-                state.dir = state.dir === 'ASC' ? 'DESC' : 'ASC';
-            } else {
-                state.order = col;
-                state.dir = 'ASC';
-            }
-            loadPage(1);
-        });
-
-        // submit add
-        $('#formAdd').on('submit', function(e){
-            e.preventDefault();
-
-            var data = {
-                head_code: $('#headAddSelect').select2('data')[0] ? $('#headAddSelect').select2('data')[0].text.toUpperCase() : '',
-                code: $('#codeAddSelect').select2('data')[0] ? $('#codeAddSelect').select2('data')[0].text.toUpperCase() : '',
-                code_name: $('input[name="code_name"]').val(),
-                desc1: $('input[name="desc1"]').val(),
-                use_yn: $('#useYnValueAdd').val()
-            };
-
-            if(!data.head_code || !data.code || !data.code_name){
-                showToast('error', 'head_code, code dan code_name wajib diisi');
-                return;
-            }
-
-            $.post("<?= base_url('code/create'); ?>", data)
-            .done(function(resp){
-                var r = typeof resp === 'string' ? JSON.parse(resp) : resp;
-
-                if(r.status){
-                    showToast('success', r.message);
-                    $('#modalAdd').modal('hide');
-                    $('#formAdd')[0].reset();
-                    $('#headAddSelect, #codeAddSelect').val(null).trigger('change');
-
-                    // 🔹 Refresh table
-                    loadPage(1);
-
-                    // 🔹 Highlight row baru (opsional)
-                    setTimeout(() => {
-                        $('#tableContainer tr').first().css('background-color', '#d4edda');
-                        setTimeout(() => $('#tableContainer tr').first().css('background-color', ''), 2000);
-                    }, 500); // tunggu table selesai load
-                } else {
-                    showToast('error', r.message);
-                }
-
-            })
-            .fail(function(xhr){
-                showToast('error', 'Terjadi kesalahan pada server!');
-                console.log("AJAX Error", xhr.responseText);
-            });
-        });
-
-        // submit edit
-        $('#formEdit').on('submit', function(e){
-            e.preventDefault();
-            $.post("<?= base_url('code/update'); ?>", $(this).serialize(), function(resp){
-                var r = resp;
-                if (typeof resp === 'string') r = JSON.parse(resp);
-                alert(r.message);
-                if (r.status) {
-                    $('#modalEdit').modal('hide');
-                    loadPage(state.page);
-                }
-            });
-        });
-
-        // export
-        $('#exportExcel').on('click', function(){
-            var url = "<?= base_url('code/export_excel'); ?>?search="+encodeURIComponent(state.search)+"&order="+state.order+"&dir="+state.dir;
-            window.location = url;
-        });
-        $('#exportPdf').on('click', function(){
-            var url = "<?= base_url('code/export_pdf'); ?>?search="+encodeURIComponent(state.search)+"&order="+state.order+"&dir="+state.dir;
-            window.location = url;
-        });
-
-    });
-
-    // global function used by pagination links
-    function loadPage(page = 1) {
-        state.page = page;
-        $('#table-body').html('<tr><td colspan="5" style="text-align:center">Loading...</td></tr>');
-
-        $.get("<?= base_url('code/get_codes_by_head'); ?>", {
-            head: state.head,
-            page: state.page,
-            limit: state.limit,
-            order: state.order,
-            dir: state.dir,
-            search: state.search
-        }, function(res){
-            let data = res;
-            if(typeof res==='string') data = JSON.parse(res);
-
-            renderTable(data.rows);
-            $('#pagination').html(data.pagination);
-            $('#info').text('Menampilkan '+ data.rows.length + ' dari '+ data.total);
-
-            // update sort icons
-            $('#mainTable thead th[data-order]').each(function(){
-                var col = $(this).data('order');
-                $(this).find('.sort-icon').text(col === state.order ? (state.dir==='ASC'?' ▲':' ▼') : '');
-            });
-        }, 'json');
-    }
-
-    $(document).on('click', '.headcode-row', function () {
-        $('.headcode-row').removeClass('active-row');
-        $(this).addClass('active-row');
-
-        state.head = $(this).data('head'); // set HEAD_CODE
-        state.page = 1;
-        loadPage(1); // reload panel kanan sesuai HEAD_CODE
-    });
-
-    function loadCodeAdd(headCode){
-        $('#codeAddSelect').empty().trigger('change');
-        $('#codeAddSelect').select2({
-            tags: true,
-            placeholder: 'Pilih atau input CODE',
-            dropdownParent: $('#modalAdd'),
-            ajax: {
-                url: '<?= base_url("code/get_code_by_head") ?>?head=' + headCode,
-                dataType: 'json',
-                processResults: function(data){ return { results: data }; }
-            }
-        }).on('select2:select', function(e){
-            $('#hiddenCodeAdd').val(e.params.data.text.toUpperCase());
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, function (char) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[char];
         });
     }
 
-    function renderTable(rows){
-        var html = '';
-        if (!rows || rows.length === 0) {
-            html = '<tr><td colspan="6" style="text-align: center">Tidak ada data</td></tr>';
-        } else {
-            rows.forEach(function(r){
-                html += '<tr>';
-                html += '<td>'+escapeHtml(r.CODE)+'</td>';
-                html += '<td>'+escapeHtml(r.CODE_NAME)+'</td>';
-                html += '<td>'+escapeHtml(r.DESC1 || '')+'</td>';
-                html += '<td style="text-align: center; vertical-align: middle">'+escapeHtml(r.USE_YN || '')+'</td>';
-                html += '<td style="text-align: center">';
-                html += '<button class="btn btn-sm btn-warning me-1" onclick="showEdit(\''+r.HEAD_CODE+'\',\''+r.CODE+'\')">Edit</button>';
-                html += '<button class="btn btn-sm btn-danger" onclick="doDelete(\''+r.HEAD_CODE+'\',\''+r.CODE+'\')">Delete</button>';
-                html += '</td>';
-                html += '</tr>';
-            });
+    async function request(url, options = {}) {
+        const response = await fetch(url, options);
+
+        let result;
+
+        try {
+            result = await response.json();
+        } catch (error) {
+            throw new Error('Invalid server response.');
         }
-        $('#table-body').html(html);
+
+        if (!response.ok || !result.status) {
+            throw new Error(result.message || 'Request failed.');
+        }
+
+        return result;
     }
 
-    function showDetail(head, code) {
-        $('#detailBody').html('Loading...');
-        $('#modalDetail').modal('show');
-        $.get("<?= base_url('code/detail'); ?>", { head: head, code: code }, function(res){
-            var r = res;
-            if (typeof res === 'string') r = JSON.parse(res);
-            if (!r.status) {
-                $('#detailBody').html('Error: '+r.message);
-                return;
-            }
-            var d = r.data;
-            var html = '<table class="table table-bordered">';
-            for (var k in d) {
-                html += '<tr><th style="width:30%">'+k+'</th><td>'+escapeHtml(d[k]||'')+'</td></tr>';
-            }
-            html += '</table>';
-            $('#detailBody').html(html);
-        }, 'json');
+    function showMessage(message, type = 'success') {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: type,
+                title: type === 'success' ? 'Success' : 'Information',
+                text: message,
+                confirmButtonColor: '#3976AD'
+            });
+        } else {
+            alert(message);
+        }
     }
 
-    window.showEdit = function(head, code){
-        $.get("<?= base_url('code/edit'); ?>", { head, code }, function(res){
-            if(typeof res==='string') res=JSON.parse(res);
-            if(!res.status) { alert('Error'); return; }
-
-            let d = res.data;
-
-            // ===== HEAD_CODE =====
-            let headOption = new Option(d.HEAD_CODE, d.HEAD_CODE, true, true);
-            $('#headEditSelect').empty().append(headOption).trigger('change');
-            $('#headEditSelect').prop('disabled', true);
-            $('#hiddenHeadEdit').val(d.HEAD_CODE);
-
-            // ===== CODE =====
-            $('#codeEditSelect').empty().append(new Option(d.CODE, d.CODE, true, true)).trigger('change');
-            $('#hiddenCodeEdit').val(d.CODE);
-
-            // Init CODE select2 ajax for searching other codes if needed
-            $('#codeEditSelect').select2({
-                tags:true,
-                placeholder:'Pilih atau input CODE',
-                width:'100%',
-                dropdownParent: $('#modalEdit'),
-                ajax:{
-                    url:'<?= base_url("code/get_code_by_head") ?>?head=' + d.HEAD_CODE,
-                    dataType:'json',
-                    processResults:function(data){ return { results: data }; }
-                }
-            }).on('select2:select', function(e){
-                $('#hiddenCodeEdit').val(e.params.data.text.toUpperCase());
+    async function confirmAction(message) {
+        if (typeof Swal !== 'undefined') {
+            const result = await Swal.fire({
+                icon: 'warning',
+                title: 'Are you sure?',
+                text: message,
+                showCancelButton: true,
+                confirmButtonText: 'Yes, continue',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#D62828'
             });
 
-            // ===== OTHER FIELDS =====
-            $('#formEdit input[name="orig_head"]').val(d.HEAD_CODE);
-            $('#formEdit input[name="orig_code"]').val(d.CODE);
-            $('#formEdit input[name="code_name"]').val(d.CODE_NAME);
-            $('#formEdit input[name="desc1"]').val(d.DESC1);
-            $('#formEdit input[name="use_yn"]').val(d.USE_YN);
+            return result.isConfirmed;
+        }
 
-            // ===== TOGGLE STATUS =====
-            const toggle = $('#useYnToggleEdit');
-            const hidden = $('#useYnValueEdit');
-            const label  = $('#useYnLabelEdit');
-            if(d.USE_YN==='Y'){ toggle.prop('checked',true); hidden.val('Y'); label.text('AKTIF'); }
-            else{ toggle.prop('checked',false); hidden.val('N'); label.text('NON-AKTIF'); }
+        return confirm(message);
+    }
 
-            $('#modalEdit').modal('show');
+    function setToolbarState() {
+        const hasHead = selectedHead !== '';
 
-        }, 'json');
-    };
+        btnNewCode.disabled = !hasHead;
+        codeSearch.disabled = !hasHead;
 
-    function loadCodeEdit(headCode){
-        $('#codeEditSelect').select2({
-            tags:true,
-            placeholder:'Pilih atau input CODE',
-            dropdownParent: $('#modalEdit'),
-            ajax:{
-                url:'<?= base_url("code/get_code_by_head") ?>?head=' + headCode,
-                dataType:'json',
-                processResults:function(data){ return { results: data }; }
+        btnDelete.disabled = !selectedCode;
+        btnSave.disabled = currentMode === '';
+    }
+
+    async function loadHeads() {
+        headList.innerHTML = '<div class="code-loading">Loading categories...</div>';
+
+        try {
+            const result = await request(URLS.heads);
+
+            heads = result.data || [];
+
+            document.getElementById('headCount').textContent = heads.length;
+
+            renderHeads();
+
+            if (heads.length > 0) {
+                const existing = heads.find(item => item.head_code === selectedHead);
+
+                selectHead(existing ? selectedHead : heads[0].head_code);
+            } else {
+                selectedHead = '';
+                showEmptyCodes();
             }
-        }).on('select2:select', function(e){
-            $('#hiddenCodeEdit').val(e.params.data.text.toUpperCase());
+
+        } catch (error) {
+            headList.innerHTML = `
+                <div class="code-empty">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <strong>Unable to load categories</strong>
+                    <span>${escapeHtml(error.message)}</span>
+                </div>
+            `;
+        }
+    }
+
+    function renderHeads() {
+        const keyword = headSearch.value.trim().toLowerCase();
+
+        const filtered = heads.filter(item => {
+            return String(item.head_code || '').toLowerCase().includes(keyword)
+                || String(item.code_name || '').toLowerCase().includes(keyword);
+        });
+
+        document.getElementById('headCount').textContent = filtered.length;
+
+        if (!filtered.length) {
+            headList.innerHTML = `
+                <div class="code-empty">
+                    <i class="bi bi-search"></i>
+                    <strong>No categories found</strong>
+                    <span>Try another search keyword.</span>
+                </div>
+            `;
+            return;
+        }
+
+        headList.innerHTML = filtered.map(item => {
+            const active = item.head_code === selectedHead;
+
+            return `
+                <button type="button"
+                        class="code-head-item ${active ? 'active' : ''}"
+                        data-head="${escapeHtml(item.head_code)}">
+
+                    <span>
+                        <span class="code-head-code">
+                            ${escapeHtml(item.head_code)}
+                        </span>
+
+                        <span class="code-head-name">
+                            ${escapeHtml(item.code_name)}
+                        </span>
+                    </span>
+
+                    <i class="bi bi-chevron-right code-head-arrow"></i>
+
+                </button>
+            `;
+        }).join('');
+
+        headList.querySelectorAll('.code-head-item').forEach(button => {
+            button.addEventListener('click', function () {
+                selectHead(this.dataset.head);
+            });
         });
     }
 
-    function doDelete(head, code) {
-        if (!confirm('Yakin ingin dihapus?')) return;
-        $.post("<?= base_url('code/remove'); ?>", { head: head, code: code }, function(res){
-            var r = res;
-            if (typeof res === 'string') r = JSON.parse(res);
-            alert(r.message);
-            if (r.status) loadPage(state.page);
-        }, 'json');
+    async function selectHead(headCode) {
+        selectedHead = headCode;
+        selectedCode = '';
+        currentMode = '';
+
+        codeFormPanel.classList.remove('show');
+        codeListPanel.classList.remove('hide');
+
+        codeSearch.value = '';
+
+        renderHeads();
+        setToolbarState();
+
+        await loadCodes();
     }
 
-    // helper
-    function escapeHtml(text) {
-        if (text === null || text === undefined) return '';
-        return $('<div/>').text(text).html();
-    }
+    async function loadCodes() {
+        if (!selectedHead) {
+            showEmptyCodes();
+            return;
+        }
 
-    function showToast(type, message) {
-        const Toast = Swal.mixin({
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
+        codeTableWrap.innerHTML = '<div class="code-loading">Loading codes...</div>';
+
+        const params = new URLSearchParams({
+            head_code: selectedHead,
+            search: codeSearch.value.trim()
         });
-        Toast.fire({
-            icon: type,
-            title: message
+
+        try {
+            const result = await request(URLS.codes + '?' + params.toString());
+
+            currentRows = result.data || [];
+
+            document.getElementById('selectedHeadInfo').textContent =
+                result.head.head_code + ' — ' + result.head.code_name;
+
+            document.getElementById('codeCount').textContent = result.total;
+
+            document.getElementById('toolbarInfo').textContent =
+                result.total + ' code records';
+
+            renderCodes();
+
+        } catch (error) {
+            codeTableWrap.innerHTML = `
+                <div class="code-empty">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <strong>Unable to load codes</strong>
+                    <span>${escapeHtml(error.message)}</span>
+                </div>
+            `;
+        }
+    }
+
+    function renderCodes() {
+        if (!currentRows.length) {
+            codeTableWrap.innerHTML = `
+                <div class="code-empty">
+                    <i class="bi bi-inbox"></i>
+                    <strong>No code records found</strong>
+                    <span>Click Add Code to create a new code.</span>
+                </div>
+            `;
+            return;
+        }
+
+        codeTableWrap.innerHTML = `
+            <table class="code-table">
+                <thead>
+                    <tr>
+                        <th style="width:18%;">Code</th>
+                        <th>Code Name</th>
+                        <th>Description 1</th>
+                        <th style="width:13%;">Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${currentRows.map(row => {
+                        const active = row.use_yn === 'Y';
+                        const selected = selectedCode === row.code;
+
+                        return `
+                            <tr data-code="${escapeHtml(row.code)}"
+                                class="${selected ? 'selected' : ''}">
+
+                                <td>
+                                    <span class="code-value">
+                                        ${escapeHtml(row.code)}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="code-name">
+                                        ${escapeHtml(row.code_name)}
+                                    </span>
+                                </td>
+
+                                <td>${escapeHtml(row.desc1 || '-')}</td>
+
+                                <td>
+                                    <span class="code-status ${active ? 'active' : 'inactive'}">
+                                        ${active ? 'Active' : 'Inactive'}
+                                    </span>
+                                </td>
+
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        `;
+
+        codeTableWrap.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', function () {
+                openEdit(this.dataset.code);
+            });
         });
     }
-</script>
 
-<script>
-    $('#useYnToggleAdd').on('change', function(){
-        $('#useYnValueAdd').val(this.checked ? 'Y' : 'N');
-        $('#useYnLabelAdd').text(this.checked ? 'AKTIF' : 'NON-AKTIF');
+    function showEmptyCodes() {
+        codeTableWrap.innerHTML = `
+            <div class="code-empty">
+                <i class="bi bi-list-ul"></i>
+                <strong>No category selected</strong>
+                <span>Select a General Code to display its codes.</span>
+            </div>
+        `;
+
+        document.getElementById('selectedHeadInfo').textContent =
+            'Select a category from the left panel';
+
+        document.getElementById('codeCount').textContent = '0';
+        document.getElementById('toolbarInfo').textContent =
+            'Select a General Code to get started';
+    }
+
+    function openNew() {
+        if (!selectedHead) {
+            showMessage('Please select a General Code first.', 'info');
+            return;
+        }
+
+        codeForm.reset();
+
+        currentMode = 'insert';
+        selectedCode = '';
+
+        document.getElementById('formMode').value = 'insert';
+        document.getElementById('oldHeadCode').value = '';
+        document.getElementById('oldCode').value = '';
+
+        document.getElementById('formHeadCode').value = selectedHead;
+        document.getElementById('formCode').readOnly = false;
+
+        document.getElementById('formTitle').textContent = 'New Code';
+        document.getElementById('formSubtitle').textContent =
+            'Create a new code under ' + selectedHead;
+
+        document.getElementById('btnSubmitForm').innerHTML =
+            '<i class="bi bi-floppy me-1"></i> Save Code';
+
+        showForm();
+        setToolbarState();
+
+        document.getElementById('formCode').focus();
+    }
+
+    async function openEdit(code) {
+        const params = new URLSearchParams({
+            head_code: selectedHead,
+            code: code
+        });
+
+        try {
+            const result = await request(URLS.detail + '?' + params.toString());
+
+            const data = result.data;
+
+            codeForm.reset();
+
+            currentMode = 'update';
+            selectedCode = data.code;
+
+            document.getElementById('formMode').value = 'update';
+
+            document.getElementById('oldHeadCode').value = data.head_code;
+            document.getElementById('oldCode').value = data.code;
+
+            document.getElementById('formHeadCode').value = data.head_code;
+            document.getElementById('formCode').value = data.code;
+            document.getElementById('formCode').readOnly = true;
+
+            document.getElementById('formCodeName').value = data.code_name || '';
+
+            document.querySelectorAll('[name="use_yn"]').forEach(input => {
+                input.checked = input.value === (data.use_yn || 'Y');
+            });
+
+            [
+                'desc1', 'desc2', 'desc3', 'desc4',
+                'desc5', 'desc6', 'desc7', 'desc8',
+                'desc9', 'desc0'
+            ].forEach(field => {
+                const input = codeForm.elements[field];
+                if (input) input.value = data[field] || '';
+            });
+
+            document.getElementById('formTitle').textContent = 'Edit Code';
+            document.getElementById('formSubtitle').textContent =
+                data.head_code + ' / ' + data.code;
+
+            document.getElementById('btnSubmitForm').innerHTML =
+                '<i class="bi bi-floppy me-1"></i> Update Code';
+
+            renderCodes();
+            showForm();
+            setToolbarState();
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    function showForm() {
+        codeListPanel.classList.add('hide');
+        codeFormPanel.classList.add('show');
+    }
+
+    function closeForm() {
+        codeFormPanel.classList.remove('show');
+        codeListPanel.classList.remove('hide');
+
+        currentMode = '';
+        selectedCode = '';
+
+        setToolbarState();
+        renderCodes();
+    }
+
+    async function saveCode(event) {
+        event.preventDefault();
+
+        if (!codeForm.reportValidity()) return;
+
+        const formData = new FormData(codeForm);
+
+        const submitButton = document.getElementById('btnSubmitForm');
+
+        submitButton.disabled = true;
+        submitButton.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+
+        try {
+            const result = await request(URLS.save, {
+                method: 'POST',
+                body: formData
+            });
+
+            showMessage(result.message);
+
+            closeForm();
+            await loadCodes();
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        } finally {
+            submitButton.disabled = false;
+
+            submitButton.innerHTML = currentMode === 'update'
+                ? '<i class="bi bi-floppy me-1"></i> Update Code'
+                : '<i class="bi bi-floppy me-1"></i> Save Code';
+        }
+    }
+
+    async function deleteCode() {
+        if (!selectedCode) return;
+
+        const confirmed = await confirmAction(
+            'Delete code ' + selectedCode + ' from ' + selectedHead + '?'
+        );
+
+        if (!confirmed) return;
+
+        const formData = new FormData();
+
+        formData.append('head_code', selectedHead);
+        formData.append('code', selectedCode);
+
+        try {
+            const result = await request(URLS.delete, {
+                method: 'POST',
+                body: formData
+            });
+
+            showMessage(result.message);
+
+            selectedCode = '';
+
+            setToolbarState();
+            await loadCodes();
+
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+
+    // Events
+
+    headSearch.addEventListener('input', renderHeads);
+
+    codeSearch.addEventListener('input', function () {
+        clearTimeout(searchTimer);
+
+        searchTimer = setTimeout(loadCodes, 300);
     });
 
-    $('#useYnToggleEdit').on('change', function(){
-        $('#useYnValueEdit').val(this.checked ? 'Y' : 'N');
-        $('#useYnLabelEdit').text(this.checked ? 'AKTIF' : 'NON-AKTIF');
+    btnNew.addEventListener('click', openNew);
+    btnNewCode.addEventListener('click', openNew);
+
+    btnSave.addEventListener('click', function () {
+        codeForm.requestSubmit();
     });
+
+    btnDelete.addEventListener('click', deleteCode);
+
+    document.getElementById('btnCloseForm').addEventListener('click', closeForm);
+    document.getElementById('btnCancelForm').addEventListener('click', closeForm);
+
+    codeForm.addEventListener('submit', saveCode);
+
+    document.getElementById('btnQuery').addEventListener('click', function () {
+        loadHeads();
+    });
+
+    // Initial load
+    loadHeads();
+
+})();
 </script>

@@ -1,19 +1,12 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Login | PT. PYGMALION ARTHA VICTORY</title>
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png"
-          href="<?= base_url('assets/frontend/img/pav-logo.png'); ?>">
-
-    <link rel="apple-touch-icon"
-          href="<?= base_url('assets/frontend/img/pav-logo.png'); ?>">
+    <title>Login | Broiler System</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet"
@@ -29,15 +22,19 @@
 
     <style>
         :root {
-            --pav-black: #111111;
-            --pav-dark: #191714;
-            --pav-orange: #f59a23;
-            --pav-gold: #ffc65c;
-            --pav-gold-dark: #d98212;
-            --pav-text: #242424;
-            --pav-muted: #858585;
-            --pav-border: #e8e5e0;
-            --pav-white: #ffffff;
+            --primary: #3976AD;
+            --primary-dark: #2F6596;
+            --primary-light: #EAF2F9;
+
+            --red: #D62828;
+            --red-light: #FFF1F1;
+
+            --text: #334E68;
+            --heading: #243B53;
+            --muted: #64748B;
+
+            --border: #E2E8F0;
+            --white: #FFFFFF;
         }
 
         * {
@@ -55,9 +52,13 @@
         body {
             min-height: 100vh;
             min-height: 100dvh;
-            color: var(--pav-text);
-            background: #f7f6f4;
+            color: var(--text);
+            background: #F5F8FC;
         }
+
+        /* =====================================
+           LOGIN PAGE
+        ===================================== */
 
         .login-page {
             min-height: 100vh;
@@ -72,30 +73,35 @@
         .login-brand {
             position: relative;
             isolation: isolate;
+
             width: 55%;
             min-height: 100vh;
+
             overflow: hidden;
+
             display: flex;
             align-items: center;
+
             padding: clamp(40px, 7vw, 100px);
-            color: #fff;
+
+            color: #FFFFFF;
 
             background:
                 radial-gradient(
                     circle at 85% 20%,
-                    rgba(245, 154, 35, .17),
-                    transparent 28%
+                    rgba(255, 255, 255, .13),
+                    transparent 30%
                 ),
                 radial-gradient(
                     circle at 15% 85%,
-                    rgba(255, 198, 92, .07),
+                    rgba(214, 40, 40, .10),
                     transparent 32%
                 ),
                 linear-gradient(
                     135deg,
-                    #101010 0%,
-                    #191713 60%,
-                    #292017 100%
+                    #3976AD 0%,
+                    #4384BA 55%,
+                    #5593C6 100%
                 );
         }
 
@@ -111,53 +117,104 @@
         .login-brand::before {
             width: 520px;
             height: 520px;
+
             right: -180px;
             top: -180px;
-            border: 1px solid rgba(255, 198, 92, .15);
+
+            border: 1px solid rgba(255, 255, 255, .20);
+
             box-shadow:
-                0 0 0 65px rgba(255, 198, 92, .025),
-                0 0 0 130px rgba(255, 198, 92, .018);
+                0 0 0 65px rgba(255, 255, 255, .035),
+                0 0 0 130px rgba(255, 255, 255, .025);
         }
 
         .login-brand::after {
             width: 420px;
             height: 420px;
+
             left: -220px;
             bottom: -220px;
-            border: 1px solid rgba(245, 154, 35, .15);
-            background: rgba(245, 154, 35, .025);
+
+            border: 1px solid rgba(255, 255, 255, .18);
+            background: rgba(255, 255, 255, .025);
         }
 
         .login-brand__content {
             position: relative;
             z-index: 2;
+
             width: 100%;
             max-width: 650px;
+
             animation: fadeIn .8s ease both;
         }
 
-        /* Logo */
+        /* =====================================
+           LOGO PLACEHOLDER
+        ===================================== */
 
         .login-brand__logo {
             display: block;
-            margin-bottom: 48px;
+            margin-bottom: 55px;
         }
 
-        .login-brand__logo img {
-            display: block;
-            width: min(100%, 430px);
-            height: auto;
-            object-fit: contain;
+        .logo-placeholder {
+            width: 190px;
+            height: 110px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+
+            border: 1px dashed rgba(255, 255, 255, .65);
+            border-radius: 12px;
+
+            background: rgba(255, 255, 255, .10);
+            color: #FFFFFF;
         }
 
-        /* Eyebrow */
+        .logo-placeholder i {
+            font-size: 30px;
+        }
+
+        .logo-placeholder span {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        /* Mobile Logo */
+
+        .login-mobile-logo {
+            display: none;
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-mobile-logo .logo-placeholder {
+            margin: 0 auto;
+
+            background: var(--primary-light);
+            border: 1px dashed #B7CCE0;
+
+            color: var(--primary);
+        }
+
+        /* =====================================
+           BRAND CONTENT
+        ===================================== */
 
         .login-eyebrow {
             display: flex;
             align-items: center;
             gap: 12px;
+
             margin-bottom: 20px;
-            color: var(--pav-gold);
+
+            color: #FFFFFF;
+
             font-size: 11px;
             font-weight: 800;
             letter-spacing: 3px;
@@ -166,21 +223,20 @@
 
         .login-eyebrow::before {
             content: '';
+
             width: 34px;
             height: 2px;
-            background: linear-gradient(
-                90deg,
-                var(--pav-orange),
-                var(--pav-gold)
-            );
-        }
 
-        /* Brand title */
+            background: var(--red);
+        }
 
         .login-brand h1 {
             max-width: 650px;
+
             margin: 0 0 25px;
-            color: #fff;
+
+            color: #FFFFFF;
+
             font-size: clamp(38px, 4.5vw, 64px);
             font-weight: 800;
             line-height: 1.1;
@@ -188,13 +244,16 @@
         }
 
         .login-brand h1 span {
-            color: var(--pav-gold);
+            color: #EAF2F9;
         }
 
         .login-brand__description {
             max-width: 500px;
+
             margin: 0;
-            color: rgba(255, 255, 255, .70);
+
+            color: rgba(255, 255, 255, .85);
+
             font-size: 14px;
             line-height: 1.9;
         }
@@ -205,6 +264,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 14px 22px;
+
             margin-top: 35px;
         }
 
@@ -212,21 +272,25 @@
             display: flex;
             align-items: center;
             gap: 9px;
-            color: rgba(255, 255, 255, .8);
+
+            color: rgba(255, 255, 255, .92);
+
             font-size: 11px;
             font-weight: 600;
         }
 
         .login-feature i {
-            color: var(--pav-gold);
+            color: #FFFFFF;
             font-size: 12px;
         }
 
         .login-brand__footer {
             position: absolute;
+
             left: clamp(40px, 7vw, 100px);
             bottom: 30px;
-            color: rgba(255, 255, 255, .43);
+
+            color: rgba(255, 255, 255, .65);
             font-size: 10px;
         }
 
@@ -237,34 +301,26 @@
         .login-form-panel {
             width: 45%;
             min-height: 100vh;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             padding: 45px;
-            background: #fff;
+
+            background: #FFFFFF;
         }
 
         .login-box {
             width: 100%;
             max-width: 400px;
+
             animation: fadeIn .8s ease both;
         }
 
-        .login-mobile-logo {
-            display: none;
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .login-mobile-logo img {
-            display: block;
-            width: min(100%, 300px);
-            max-height: 110px;
-            margin: 0 auto;
-            object-fit: contain;
-        }
-
-        /* Heading */
+        /* =====================================
+           LOGIN HEADING
+        ===================================== */
 
         .login-heading {
             margin-bottom: 32px;
@@ -272,8 +328,11 @@
 
         .login-heading__eyebrow {
             display: block;
+
             margin-bottom: 10px;
-            color: var(--pav-gold-dark);
+
+            color: var(--red);
+
             font-size: 10px;
             font-weight: 800;
             letter-spacing: 2.5px;
@@ -282,7 +341,9 @@
 
         .login-heading h2 {
             margin: 0 0 10px;
-            color: #171717;
+
+            color: var(--heading);
+
             font-size: clamp(28px, 3vw, 36px);
             font-weight: 800;
             letter-spacing: -1px;
@@ -290,23 +351,31 @@
 
         .login-heading p {
             margin: 0;
-            color: var(--pav-muted);
+
+            color: var(--muted);
+
             font-size: 13px;
             line-height: 1.8;
         }
 
-        /* Error */
+        /* =====================================
+           ERROR MESSAGE
+        ===================================== */
 
         .login-error {
             display: flex;
             align-items: flex-start;
             gap: 12px;
+
             margin-bottom: 24px;
             padding: 14px 16px;
-            border: 1px solid #fecaca;
+
+            border: 1px solid #FECACA;
             border-radius: 10px;
-            background: #fff1f2;
-            color: #be123c;
+
+            background: var(--red-light);
+            color: #BE123C;
+
             font-size: 12px;
             line-height: 1.6;
         }
@@ -315,7 +384,9 @@
             margin-top: 3px;
         }
 
-        /* Form */
+        /* =====================================
+           FORM
+        ===================================== */
 
         .login-form-group {
             margin-bottom: 22px;
@@ -323,8 +394,11 @@
 
         .login-form-label {
             display: block;
+
             margin-bottom: 9px;
-            color: #292929;
+
+            color: var(--heading);
+
             font-size: 12px;
             font-weight: 700;
         }
@@ -335,99 +409,122 @@
 
         .login-input-icon {
             position: absolute;
+
             top: 50%;
             left: 17px;
             z-index: 2;
+
             transform: translateY(-50%);
-            color: #999;
+
+            color: #94A3B8;
             font-size: 14px;
         }
 
         .login-input {
             width: 100%;
             height: 54px;
+
             padding: 0 48px;
-            border: 1px solid var(--pav-border);
+
+            border: 1px solid var(--border);
             border-radius: 10px;
+
             outline: none;
-            background: #fff;
-            color: var(--pav-text);
+
+            background: #FFFFFF;
+            color: var(--text);
+
             font-family: inherit;
             font-size: 13px;
+
             transition: border-color .2s, box-shadow .2s;
         }
 
         .login-input::placeholder {
-            color: #a5a5a5;
+            color: #A5B1BE;
         }
 
         .login-input:hover {
-            border-color: #d4c8b6;
+            border-color: #A9C3DC;
         }
 
         .login-input:focus {
-            border-color: var(--pav-orange);
-            box-shadow: 0 0 0 4px rgba(245, 154, 35, .12);
+            border-color: var(--primary);
+
+            box-shadow: 0 0 0 4px rgba(57, 118, 173, .12);
         }
 
-        /* Password visibility */
+        /* =====================================
+           PASSWORD TOGGLE
+        ===================================== */
 
         .password-toggle {
             position: absolute;
+
             top: 50%;
             right: 15px;
+
             transform: translateY(-50%);
+
             padding: 5px;
+
             border: none;
             background: transparent;
-            color: #999;
+
+            color: #94A3B8;
             cursor: pointer;
         }
 
         .password-toggle:hover {
-            color: var(--pav-gold-dark);
+            color: var(--primary);
         }
 
-        /* Login button */
+        /* =====================================
+           LOGIN BUTTON
+        ===================================== */
 
         .btn-login {
             width: 100%;
             min-height: 54px;
+
             margin-top: 5px;
             padding: 12px 20px;
-            border: 1px solid rgba(255, 198, 92, .65);
+
+            border: 1px solid var(--primary);
             border-radius: 10px;
+
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
 
-            background: linear-gradient(
-                110deg,
-                #e88a16 0%,
-                #ffbd4a 52%,
-                #f39a20 100%
-            );
+            background: var(--primary);
+            color: #FFFFFF;
 
-            color: #20160b;
             font-family: inherit;
             font-size: 13px;
             font-weight: 800;
             letter-spacing: 1px;
+
             cursor: pointer;
+
             transition: .25s ease;
         }
 
         .btn-login:hover {
-            background: linear-gradient(
-                110deg,
-                #d98212,
-                #f3a52d,
-                #df8210
-            );
-            color: #17110a;
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+
+            color: #FFFFFF;
+
             transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(245, 154, 35, .23);
+
+            box-shadow: 0 10px 24px rgba(57, 118, 173, .20);
+        }
+
+        .btn-login:focus-visible {
+            outline: 3px solid rgba(57, 118, 173, .3);
+            outline-offset: 3px;
         }
 
         .btn-login:disabled {
@@ -436,34 +533,44 @@
             transform: none;
         }
 
-        /* Security */
+        /* =====================================
+           SECURITY
+        ===================================== */
 
         .login-security {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 7px;
+
             margin-top: 22px;
-            color: #999;
+
+            color: #94A3B8;
+
             font-size: 10px;
             text-align: center;
         }
 
         .login-security i {
-            color: var(--pav-gold-dark);
+            color: var(--primary);
         }
+
+        /* Footer mobile */
 
         .login-footer-mobile {
             display: none;
         }
 
-        /* Animation */
+        /* =====================================
+           ANIMATION
+        ===================================== */
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(12px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -475,6 +582,7 @@
         ===================================== */
 
         @media (max-width: 991px) {
+
             .login-brand {
                 width: 50%;
                 padding: 40px;
@@ -485,13 +593,13 @@
                 padding: 30px;
             }
 
-            .login-brand__logo img {
-                max-width: 340px;
-            }
-
             .login-brand h1 {
                 font-size: 40px;
                 letter-spacing: -1px;
+            }
+
+            .login-brand__logo {
+                margin-bottom: 40px;
             }
         }
 
@@ -500,8 +608,9 @@
         ===================================== */
 
         @media (max-width: 767px) {
+
             .login-page {
-                background: #fff;
+                background: #FFFFFF;
             }
 
             .login-brand {
@@ -510,8 +619,10 @@
 
             .login-form-panel {
                 width: 100%;
+
                 min-height: 100vh;
                 min-height: 100dvh;
+
                 padding: 35px 24px;
             }
 
@@ -539,14 +650,17 @@
 
             .login-footer-mobile {
                 display: block;
+
                 margin-top: 30px;
-                color: #999;
+
+                color: #94A3B8;
                 font-size: 10px;
                 text-align: center;
             }
         }
 
         @media (max-width: 380px) {
+
             .login-form-panel {
                 padding: 28px 20px;
             }
@@ -558,6 +672,7 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
+
             *,
             *::before,
             *::after {
@@ -565,6 +680,7 @@
                 transition: none !important;
             }
         }
+
     </style>
 </head>
 
@@ -573,64 +689,81 @@
 <div class="login-page">
 
     <!-- =====================================
-         BRAND PANEL
+         LEFT BRAND PANEL
     ====================================== -->
 
     <section class="login-brand">
 
         <div class="login-brand__content">
 
+            <!-- Logo Placeholder -->
+
             <div class="login-brand__logo">
-                <img
-                    src="<?= base_url('assets/frontend/img/pav-logo.png'); ?>"
-                    alt="PAV - PT Pygmalion Artha Victory">
+
+                <div class="logo-placeholder">
+
+                    <i class="fa-regular fa-image"></i>
+
+                    <span>YOUR LOGO HERE</span>
+
+                </div>
+
             </div>
 
+            <!-- Brand Content -->
+
             <div class="login-eyebrow">
-                Official Company Platform
+                Broiler Management Platform
             </div>
 
             <h1>
-                PT PYGMALION<br>
-                <span>ARTHA VICTORY</span>
+                BROILER<br>
+                <span>SYSTEM</span>
             </h1>
 
             <p class="login-brand__description">
-                Welcome to the official platform of
-                PT Pygmalion Artha Victory. Sign in to access
-                your account and continue to the company system.
+                Welcome to Broiler System, an integrated platform
+                designed to manage and monitor your broiler farming
+                operations efficiently.
             </p>
 
+            <!-- Features -->
+
             <div class="login-features">
+
+                <div class="login-feature">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Integrated Management
+                </div>
+
+                <div class="login-feature">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Operational Monitoring
+                </div>
 
                 <div class="login-feature">
                     <i class="fa-solid fa-circle-check"></i>
                     Secure Access
                 </div>
 
-                <div class="login-feature">
-                    <i class="fa-solid fa-circle-check"></i>
-                    Reliable Platform
-                </div>
-
-                <div class="login-feature">
-                    <i class="fa-solid fa-circle-check"></i>
-                    Authorized Users
-                </div>
-
             </div>
 
         </div>
 
+        <!-- Footer -->
+
         <div class="login-brand__footer">
+
             &copy; <?= date('Y'); ?>
-            PT PYGMALION ARTHA VICTORY. All Rights Reserved.
+            Broiler System. All Rights Reserved.
+
         </div>
 
     </section>
 
+
     <!-- =====================================
-         LOGIN FORM
+         RIGHT LOGIN PANEL
     ====================================== -->
 
     <section class="login-form-panel">
@@ -640,9 +773,15 @@
             <!-- Mobile Logo -->
 
             <div class="login-mobile-logo">
-                <img
-                    src="<?= base_url('assets/frontend/img/pav-logo.png'); ?>"
-                    alt="PAV - PT Pygmalion Artha Victory">
+
+                <div class="logo-placeholder">
+
+                    <i class="fa-regular fa-image"></i>
+
+                    <span>YOUR LOGO HERE</span>
+
+                </div>
+
             </div>
 
             <!-- Heading -->
@@ -650,17 +789,18 @@
             <div class="login-heading">
 
                 <span class="login-heading__eyebrow">
-                    Administrator Access
+                    Account Access
                 </span>
 
                 <h2>Welcome back</h2>
 
                 <p>
                     Sign in with your username and password
-                    to access the company system.
+                    to access the Broiler System.
                 </p>
 
             </div>
+
 
             <!-- Error Message -->
 
@@ -677,6 +817,7 @@
                 </div>
 
             <?php endif; ?>
+
 
             <!-- Login Form -->
 
@@ -710,6 +851,7 @@
                     </div>
 
                 </div>
+
 
                 <!-- Password -->
 
@@ -748,9 +890,13 @@
 
                 </div>
 
+
                 <!-- Submit -->
 
-                <button type="submit" class="btn-login" id="loginButton">
+                <button
+                    type="submit"
+                    class="btn-login"
+                    id="loginButton">
 
                     <span id="loginButtonText">SIGN IN</span>
 
@@ -759,18 +905,27 @@
 
                 </button>
 
+
                 <!-- Security -->
 
                 <div class="login-security">
+
                     <i class="fa-solid fa-shield-halved"></i>
-                    Secure access to PT Pygmalion Artha Victory
+
+                    Secure access to Broiler System
+
                 </div>
 
             </form>
 
+
+            <!-- Mobile Footer -->
+
             <div class="login-footer-mobile">
-                &copy; <?= date('Y'); ?>
-                PT PYGMALION ARTHA VICTORY
+
+                &copy; <?= date('Y'); ?> Broiler System.
+                All Rights Reserved.
+
             </div>
 
         </div>
@@ -779,14 +934,20 @@
 
 </div>
 
+
+<!-- =====================================
+     JAVASCRIPT
+====================================== -->
+
 <script>
+
 document.addEventListener('DOMContentLoaded', function () {
+
+    /* Show / Hide Password */
 
     const togglePassword = document.getElementById('togglePassword');
     const password = document.getElementById('password');
     const passwordIcon = document.getElementById('passwordIcon');
-
-    /* Show / hide password */
 
     if (togglePassword && password && passwordIcon) {
 
@@ -796,15 +957,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             password.type = showPassword ? 'text' : 'password';
 
-            passwordIcon.classList.toggle(
-                'fa-eye',
-                !showPassword
-            );
-
-            passwordIcon.classList.toggle(
-                'fa-eye-slash',
-                showPassword
-            );
+            passwordIcon.classList.toggle('fa-eye', !showPassword);
+            passwordIcon.classList.toggle('fa-eye-slash', showPassword);
 
             togglePassword.setAttribute(
                 'aria-label',
@@ -820,7 +974,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    /* Hide error message when user edits input */
+
+    /* Hide Error Message When Input Changes */
 
     const inputs = document.querySelectorAll('.login-input');
     const errorBox = document.querySelector('.login-error');
@@ -837,10 +992,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    /* Submit loading state */
+
+    /* Submit Loading State */
 
     const loginForm = document.getElementById('loginForm');
     const loginButton = document.getElementById('loginButton');
+
     const loginButtonText = document.getElementById('loginButtonText');
     const loginButtonIcon = document.getElementById('loginButtonIcon');
 
@@ -853,9 +1010,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             loginButton.disabled = true;
+
             loginButtonText.textContent = 'SIGNING IN...';
 
             loginButtonIcon.classList.remove('fa-arrow-right');
+
             loginButtonIcon.classList.add('fa-spinner', 'fa-spin');
 
         });
@@ -863,6 +1022,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+
 </script>
 
 </body>

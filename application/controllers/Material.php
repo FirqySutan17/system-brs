@@ -1,255 +1,381 @@
+
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Material extends MY_Controller {
-
-    public function __construct() {
+class Material extends CI_Controller
+{
+    public function __construct()
+    {
         parent::__construct();
-        // if (!has_permission('base_material')) {
-        //     show_404();
-        // }
-        $this->load->model('Material_model', 'm');
-        $this->load->library('form_validation');
+
+        if (!$this->session->userdata('logged_in')) {
+            redirect('auth');
+        }
+
+        $this->load->model('Material_model');
+        $this->load->helper(['url', 'form']);
     }
 
+    /**
+     * Main page.
+     */
     public function index()
     {
-        $this->load->view('templates/header', ['title' => 'Material']);
-        $this->load->view('templates/sidebar');
-        $this->load->view('admin/material/list'); // konten dinamis
+        $data['title'] = 'Material Code';
+        $data['current_page'] = 'material_code';
 
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('admin/material/list', $data);
         $this->load->view('templates/footer');
     }
 
-    // ======================
-    // LOAD DATA AJAX
-    // ======================
-    public function load_data() {
-        $page  = intval($this->input->get('page'));
-        $limit = intval($this->input->get('limit'));
-        $order = $this->input->get('order');
-        $dir   = $this->input->get('dir');
-        $search = $this->input->get('search');
+    /**
+     * Material list.
+     */
+    public function get_materials()
+    {
+        $filters = [
+            'search'   => trim((string) $this->input->get('search', TRUE)),
+            'material' => trim((string) $this->input->get('material', TRUE)),
+            'class1'   => trim((string) $this->input->get('class1', TRUE)),
+            'class2'   => trim((string) $this->input->get('class2', TRUE))
+        ];
 
-        $offset = ($page - 1) * $limit;
+        $rows = $this->Material_model->get_material_list($filters);
 
-        $rows  = $this->m->get_data($limit, $offset, $search, $order, $dir);
-        $total = $this->m->count_data($search);
-
-        // generate pagination
-        $pages = ceil($total / $limit);
-
-        $pagination = '<nav><ul class="pagination justify-content-end">';
-        for ($i=1; $i <= $pages; $i++) {
-            $active = $i == $page ? 'active' : '';
-            $pagination .= "
-                <li class='page-item $active'>
-                    <a class='page-link' href='javascript:loadPage($i)'>$i</a>
-                </li>";
-        }
-        $pagination .= '</ul></nav>';
-
-        echo json_encode([
-            'rows' => $rows,
-            'total' => $total,
-            'pagination' => $pagination
+        return $this->json_response([
+            'status' => true,
+            'data'   => $rows,
+            'total'  => count($rows)
         ]);
     }
 
-    // ======================
-    // DETAIL
-    // ======================
-    public function detail() {
-        $id = $this->input->get('material');
+    /**
+     * Material detail.
+     */
+    public function get_material()
+    {
+        $material = trim((string) $this->input->get('material', TRUE));
 
-        $row = $this->m->detail($id);
+        if ($material === '') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Material code is required.'
+            ], 422);
+        }
+
+        $row = $this->Material_model->get_by_material($material);
+
         if (!$row) {
-            echo json_encode(['status' => false, 'message' => 'Data tidak ditemukan']);
-            return;
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Material not found.'
+            ], 404);
         }
 
-        echo json_encode(['status' => true, 'data' => $row]);
-    }
-
-    public function get_class()
-    {
-        $term = $this->input->get('q'); // jika ada pencarian dari Select2
-
-        $this->db->select('CODE_NAME as id, CODE_NAME as text')
-                ->from('cd_code')
-                ->where('HEAD_CODE', 'AE')
-                ->where('CODE !=', '*');
-
-        if (!empty($term)) {
-            $this->db->like('CODE_NAME', $term);
-        }
-
-        $this->db->group_by('CODE_NAME')
-                ->order_by('CODE_NAME', 'ASC');
-
-        $data = $this->db->get()->result_array();
-
-        echo json_encode($data);
-    }
-
-    public function get_grades()
-    {
-        $term = $this->input->get('q'); // jika ada pencarian dari Select2
-
-        $this->db->select('CODE_NAME as id, CODE_NAME as text')
-                ->from('cd_code')
-                ->where('HEAD_CODE', 'AF')
-                ->where('CODE !=', '*');
-
-        if (!empty($term)) {
-            $this->db->like('CODE_NAME', $term);
-        }
-
-        $this->db->group_by('CODE_NAME')
-                ->order_by('CODE_NAME', 'ASC');
-
-        $data = $this->db->get()->result_array();
-
-        echo json_encode($data);
-    }
-
-    // ======================
-    // CREATE
-    // ======================
-    public function create() {
-        // server-side validation
-        $this->form_validation->set_rules('material', 'Material', 'required|max_length[50]');
-        $this->form_validation->set_rules('material_name', 'Material Name', 'required|max_length[255]');
-        $this->form_validation->set_rules('class', 'Class', 'required');
-        $this->form_validation->set_rules('grade', 'Grade', 'required');
-        $this->form_validation->set_rules('stock', 'Stock', 'numeric');
-        $this->form_validation->set_rules('htc', 'HTC', 'numeric');
-        $this->form_validation->set_rules('unit_price', 'Unit Price', 'numeric');
-
-        if ($this->form_validation->run() == FALSE) {
-            echo json_encode(['status'=>false,'message'=>trim(strip_tags(validation_errors()))]);
-            return;
-        }
-
-        $data = [
-            'plant'   => $this->session->userdata('plant'),
-            'material' => $this->input->post('material', TRUE),
-            'material_name' => $this->input->post('material_name', TRUE),
-            'material_class' => $this->input->post('class', TRUE),
-            'grade' => $this->input->post('grade', TRUE),
-            'stock' => $this->input->post('stock', TRUE) ?: 0,
-            'htc' => $this->input->post('htc', TRUE) ?: 0,
-            'mat_spec' => $this->input->post('mat_spec', TRUE),
-            'mat_unit' => $this->input->post('mat_unit', TRUE),
-            'unit_price' => $this->input->post('unit_price', TRUE) ?: 0,
-            'remark' => $this->input->post('remark', TRUE)
-        ];
-
-        // duplicate check
-        if ($this->m->get_by_pk($data['material'])) {
-            echo json_encode(['status'=>false,'message'=>'Material sudah ada']);
-            return;
-        }
-
-        $ok = $this->m->insert($data);
-        echo json_encode(['status'=>$ok,'message'=>$ok ? 'Berhasil menambahkan data.' : 'Gagal menambahkan data.']);
-    }
-
-
-    public function edit() {
-        $material = $this->input->get('material', TRUE);
-        if (!$material) {
-            echo json_encode(['status'=>false,'message'=>'Key invalid']);
-            return;
-        }
-
-        $row = $this->m->get_by_pk($material);
-        echo json_encode(['status'=>true,'data'=>$row]);
-    }
-
-    public function update() {
-        $orig_material = $this->input->post('orig_material', TRUE);
-        if (!$orig_material) {
-            echo json_encode(['status'=>false,'message'=>'Primary key missing']);
-            return;
-        }
-
-        // validation
-        $this->form_validation->set_rules('material', 'Material', 'required|max_length[50]');
-        $this->form_validation->set_rules('material_name', 'Material Name', 'required|max_length[255]');
-        $this->form_validation->set_rules('class', 'Class', 'required');
-        $this->form_validation->set_rules('grade', 'Grade', 'required');
-        $this->form_validation->set_rules('stock', 'Stock', 'numeric');
-        $this->form_validation->set_rules('htc', 'HTC', 'numeric');
-        $this->form_validation->set_rules('unit_price', 'Unit Price', 'numeric');
-
-        if ($this->form_validation->run() == FALSE) {
-            echo json_encode(['status'=>false,'message'=>trim(strip_tags(validation_errors()))]);
-            return;
-        }
-
-        $data = [
-            'material' => $this->input->post('material', TRUE),
-            'material_name' => $this->input->post('material_name', TRUE),
-            'material_class' => $this->input->post('class', TRUE),
-            'grade' => $this->input->post('grade', TRUE),
-            'stock' => $this->input->post('stock', TRUE) ?: 0,
-            'htc' => $this->input->post('htc', TRUE) ?: 0,
-            'mat_spec' => $this->input->post('mat_spec', TRUE),
-            'mat_unit' => $this->input->post('mat_unit', TRUE),
-            'unit_price' => $this->input->post('unit_price', TRUE) ?: 0,
-            'remark' => $this->input->post('remark', TRUE)
-        ];
-
-        $ok = $this->m->update($orig_material, $data);
-        echo json_encode(['status'=>$ok,'message'=>$ok ? 'Data berhasil diupdate' : 'Gagal update data']);
-    }
-
-
-    // ======================
-    // DELETE
-    // ======================
-    public function remove() {
-        $id = $this->input->post('material');
-
-        $ok = $this->m->delete($id);
-
-        echo json_encode([
-            'status' => $ok,
-            'message' => $ok ? 'Data berhasil dihapus.' : 'Gagal menghapus data.'
+        return $this->json_response([
+            'status' => true,
+            'data'   => $row
         ]);
     }
 
-    // ======================
-    // EXPORT EXCEL
-    // ======================
-    public function export_excel() {
-        $search = $this->input->get('search');
-        $order  = $this->input->get('order');
-        $dir    = $this->input->get('dir');
-
-        $data['rows'] = $this->m->export($search, $order, $dir);
-
-        header("Content-type: application/vnd-ms-excel");
-        header("Content-Disposition: attachment; filename=material_export.xls");
-        $this->load->view('material/export_excel', $data);
+    /**
+     * Dropdown data.
+     */
+    public function get_dropdowns()
+    {
+        return $this->json_response([
+            'status' => true,
+            'data' => [
+                'class1' => $this->Material_model->get_dropdown_codes('GM'),
+                'mat_unit' => $this->Material_model->get_dropdown_codes('UT')
+            ]
+        ]);
     }
 
-    // ======================
-    // EXPORT PDF
-    // ======================
-    public function export_pdf() {
-        $search = $this->input->get('search');
-        $order  = $this->input->get('order');
-        $dir    = $this->input->get('dir');
+    /**
+     * Get next Material Code.
+     */
+    public function get_next_material_code()
+    {
+        if ($this->input->method(TRUE) !== 'GET') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Invalid request method.'
+            ], 405);
+        }
 
-        $data['rows'] = $this->m->export($search, $order, $dir);
+        $material = $this->Material_model->generate_material_code();
 
-        $this->load->library('pdf');
+        if ($material === FALSE) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Failed to generate Material Code.'
+            ], 500);
+        }
 
-        $this->pdf->setPaper('A4', 'landscape');
-        $this->pdf->load_view('material/export_pdf', $data);
-        $this->pdf->render();
-        $this->pdf->stream("material.pdf", ["Attachment" => 1]);
+        return $this->json_response([
+            'status'   => true,
+            'material' => $material
+        ]);
+    }
+
+    /**
+     * Insert / Update.
+     */
+    public function save()
+    {
+        if ($this->input->method(TRUE) !== 'POST') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Invalid request method.'
+            ], 405);
+        }
+
+        $material = strtoupper(
+            trim((string) $this->input->post('material', TRUE))
+        );
+
+        $mode = trim((string) $this->input->post('mode', TRUE));
+
+        if ($material === '') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Material Code is required.'
+            ], 422);
+        }
+
+        if (strlen($material) > 12) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Material Code maximum length is 12 characters.'
+            ], 422);
+        }
+
+        if (!in_array($mode, ['insert', 'update'], TRUE)) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Invalid save mode.'
+            ], 422);
+        }
+
+        if (
+            $mode === 'insert' &&
+            !preg_match('/^MAT[0-9]{5,}$/', $material)
+        ) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Invalid generated Material Code.'
+            ], 422);
+        }
+
+        $user = (string) $this->session->userdata('user_nm');
+        $today = date('Ymd');
+
+        $data = [
+            'material'         => $material,
+            'material_name'    => $this->post_value('material_name'),
+            'material_sname'   => $this->post_value('material_sname'),
+            'remark'           => $this->post_value('remark'),
+
+            'class1'           => $this->post_value('class1'),
+            'balance_control'  => $this->post_value('balance_control'),
+            'import_class'     => $this->post_value('import_class'),
+            'class2'           => $this->post_value('class2'),
+            'class3'           => $this->post_value('class3'),
+
+            'mat_spec'         => $this->post_value('mat_spec'),
+            'mat_size'         => $this->post_value('mat_size'),
+            'mat_unit'         => $this->post_value('mat_unit'),
+
+            'unit_price'       => $this->post_value('unit_price'),
+            'before_unit_price'=> $this->post_value('before_unit_price'),
+            'vat_rate'         => $this->post_value('vat_rate'),
+            'delivery_day'     => $this->post_value('delivery_day'),
+
+            'contract_group'   => $this->post_value('contract_group'),
+            'yn_spare' => $this->post_value('yn_spare'),
+
+            'optimum_qty'      => $this->post_value('optimum_qty'),
+            'formula'          => $this->post_value('formula'),
+            'bl_allowance'     => $this->post_value('bl_allowance'),
+            'rcv_allowance'    => $this->post_value('rcv_allowance'),
+            'last_in_date'     => $this->post_value('last_in_date')
+        ];
+
+        // Numeric validation.
+        $numeric_fields = [
+            'unit_price',
+            'before_unit_price',
+            'vat_rate',
+            'delivery_day',
+            'optimum_qty',
+            'bl_allowance',
+            'rcv_allowance'
+        ];
+
+        foreach ($numeric_fields as $field) {
+            if (
+                $data[$field] !== NULL &&
+                !is_numeric($data[$field])
+            ) {
+                return $this->json_response([
+                    'status' => false,
+                    'message' => ucfirst(
+                        str_replace('_', ' ', $field)
+                    ) . ' must be numeric.'
+                ], 422);
+            }
+        }
+
+        // Balance Control validation.
+        if (
+            $data['balance_control'] !== NULL &&
+            !in_array($data['balance_control'], ['Y', 'N'], TRUE)
+        ) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Balance Control must be Y or N.'
+            ], 422);
+        }
+
+        // Last In Date validation.
+        if (
+            $data['last_in_date'] !== NULL &&
+            !preg_match('/^\d{8}$/', $data['last_in_date'])
+        ) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Last In Date must use YYYYMMDD format.'
+            ], 422);
+        }
+
+        if ($mode === 'insert') {
+            if ($this->Material_model->exists_material($material)) {
+                return $this->json_response([
+                    'status'  => false,
+                    'message' => 'Material Code already exists.'
+                ], 409);
+            }
+
+            $data['delete_flag'] = 'N';
+            $data['reg_emp'] = $user;
+            $data['reg_date'] = $today;
+
+            $success = $this->Material_model->insert_material($data);
+
+            $message = 'Material created successfully.';
+        } else {
+            if (!$this->Material_model->get_by_material($material)) {
+                return $this->json_response([
+                    'status'  => false,
+                    'message' => 'Material not found.'
+                ], 404);
+            }
+
+            unset($data['material']);
+
+            $data['mod_emp'] = $user;
+            $data['mod_date'] = $today;
+
+            $success = $this->Material_model->update_material(
+                $material,
+                $data
+            );
+
+            $message = 'Material updated successfully.';
+        }
+
+        if (!$success) {
+            log_message('error', 'Material save error: ' . json_encode($this->db->error()));
+
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Failed to save material. Please check application log.'
+            ], 500);
+        }
+
+        return $this->json_response([
+            'status'    => true,
+            'message'   => $message,
+            'material'  => $material
+        ]);
+    }
+
+    /**
+     * Soft delete.
+     */
+    public function delete()
+    {
+        if ($this->input->method(TRUE) !== 'POST') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Invalid request method.'
+            ], 405);
+        }
+
+        $material = trim((string) $this->input->post('material', TRUE));
+        $user = (string) $this->session->userdata('user_nm');
+
+        if ($material === '') {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Material Code is required.'
+            ], 422);
+        }
+
+        if (!$this->Material_model->get_by_material($material)) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Material not found.'
+            ], 404);
+        }
+
+        $success = $this->Material_model->delete_material(
+            $material,
+            $user
+        );
+
+        if (!$success) {
+            return $this->json_response([
+                'status'  => false,
+                'message' => 'Failed to delete material.'
+            ], 500);
+        }
+
+        return $this->json_response([
+            'status'  => true,
+            'message' => 'Material deleted successfully.'
+        ]);
+    }
+
+    /**
+     * POST value helper.
+     */
+    private function post_value($field)
+    {
+        $value = $this->input->post($field, TRUE);
+
+        if ($value === NULL) {
+            return NULL;
+        }
+
+        $value = trim((string) $value);
+
+        return $value === '' ? NULL : $value;
+    }
+
+    /**
+     * JSON response.
+     */
+    private function json_response($data, $http_code = 200)
+    {
+        $data['csrf_hash'] = $this->security->get_csrf_hash();
+
+        return $this->output
+            ->set_status_header($http_code)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode($data));
     }
 }

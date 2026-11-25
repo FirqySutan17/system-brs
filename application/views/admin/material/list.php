@@ -1,595 +1,1810 @@
+
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+$base_url = rtrim(base_url(), '/') . '/';
+$csrf_name = $this->security->get_csrf_token_name();
+$csrf_hash = $this->security->get_csrf_hash();
+?>
+
 <style>
-.material-page{--mp-primary:#2864f0;--mp-text:#17233b;--mp-muted:#66758f;--mp-border:#e2e8f2;color:var(--mp-text);padding-bottom:24px}
-.material-page .mp-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:4px 0 18px;color:var(--mp-muted);font-size:13px}
-.material-page .mp-breadcrumb a{color:var(--mp-muted);text-decoration:none}
-.material-page .mp-hero{display:flex;align-items:center;gap:15px;padding:22px 25px;margin-top:60px;margin-bottom:16px;border:1px solid #e5ebf6;border-radius:16px;background:linear-gradient(115deg,#fff,#f8faff 55%,#edf3ff);box-shadow:0 7px 24px #1b34600b}
-.material-page .mp-hero-icon{width:52px;height:52px;flex:0 0 52px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#e6eeff;color:var(--mp-primary);font-size:22px}
-.material-page .mp-hero h1{margin:0 0 5px;font-size:23px;font-weight:750;letter-spacing:-.4px}
-.material-page .mp-hero p{margin:0;color:var(--mp-muted);font-size:13px}
-.material-page .mp-card{background:#fff;border:1px solid #e5ebf4;border-radius:16px;box-shadow:0 9px 28px #1b34600e;overflow:hidden}
-.material-page .mp-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 21px;border-bottom:1px solid #edf1f7;background:#fcfdff}
-.material-page .mp-toolbar-title{font-size:15px;font-weight:750;margin:0 0 4px}
-.material-page .mp-toolbar-subtitle{font-size:12px;color:var(--mp-muted);margin:0}
-.material-page .mp-toolbar-actions{display:flex;align-items:center;gap:10px;min-width:min(100%,420px)}
-.material-page #search{height:41px;border:1px solid var(--mp-border);border-radius:9px;padding:9px 12px;font-size:13px;box-shadow:none}
-.material-page #search:focus,.material-page .form-control:focus{border-color:#8aafff;box-shadow:0 0 0 3px #2864f017}
-.material-page .mp-add-btn{display:inline-flex;align-items:center;gap:7px;justify-content:center;min-height:41px;padding:9px 15px;border-radius:9px;background:var(--mp-primary);border-color:var(--mp-primary);font-size:13px;font-weight:650;white-space:nowrap}
-.material-page .mp-table-wrap{overflow:auto}
-.material-page #mainTable{min-width:1120px;border-collapse:separate;border-spacing:0;margin:0}
-.material-page #mainTable thead th{position:sticky;top:0;z-index:1;background:#f7f9fd;color:#63728b;font-size:11px;text-transform:uppercase;letter-spacing:.3px;font-weight:750;padding:13px 12px;border-bottom:1px solid #e7edf6;white-space:nowrap}
-.material-page #mainTable tbody td{padding:12px;font-size:12.5px;vertical-align:middle;border-bottom:1px solid #edf1f7}
-.material-page #mainTable tbody tr:hover{background:#f8faff}
-.material-page #mainTable th[data-order]{cursor:pointer}
-.material-page .mp-code{font-weight:750;color:#285de5}
-.material-page .mp-name{font-weight:650;color:#26364f}
-.material-page .mp-price{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.material-page .mp-status{display:inline-flex;padding:4px 8px;border-radius:20px;background:#edf7f0;color:#16804a;font-size:11px;font-weight:700}
-.material-page .mp-actions{display:flex;justify-content:center;gap:6px}
-.material-page .mp-actions .btn{border-radius:7px;font-size:11px;padding:5px 9px}
-.material-page .mp-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:#fbfcff}
-.material-page .modal-content{border:0;border-radius:15px;overflow:hidden;box-shadow:0 18px 55px #17233b26}
-.material-page .modal-header{padding:18px 22px;background:#fcfdff;border-bottom:1px solid #edf1f7}
-.material-page .modal-title{font-size:16px;font-weight:750}
-.material-page .modal-body{padding:22px}
-.material-page .modal-body .form-label{font-size:12.5px;font-weight:650;color:#26364f;margin-bottom:7px}
-.material-page .modal-body .form-control{min-height:41px;border:1px solid var(--mp-border);border-radius:8px;font-size:13px;box-shadow:none}
-.material-page .modal-footer{padding:14px 22px;background:#fbfcff;border-top:1px solid #edf1f7}
-.material-page .modal-footer .btn{border-radius:8px;font-size:13px;font-weight:650;padding:9px 15px}
-.material-page .select2-container{width:100%!important}
-.material-page .select2-container--default .select2-selection--single{height:41px;border:1px solid var(--mp-border);border-radius:8px}
-.material-page .select2-container--default .select2-selection--single .select2-selection__rendered{line-height:39px;font-size:13px;padding-left:12px}
-.material-page .select2-container--default .select2-selection--single .select2-selection__arrow{height:39px;right:7px}
-.material-page .select2-container--open{z-index:2060}
-@media(max-width:767px){.material-page .mp-hero{padding:17px;margin-top:20px}.material-page .mp-hero h1{font-size:19px}.material-page .mp-toolbar{align-items:stretch;flex-direction:column;padding:15px}.material-page .mp-toolbar-actions{min-width:0}.material-page .mp-toolbar-actions #search{min-width:0}.material-page .mp-footer{align-items:flex-start;flex-direction:column}.material-page .modal-body{padding:16px}}
-</style>
-
-<div class="content-wrapper material-page">
-<section class="content pt-3"><div class="container-fluid">
-<nav class="mp-breadcrumb"><a href="<?= base_url(); ?>"><i class="fas fa-home"></i></a><i class="fas fa-chevron-right" style="font-size:10px"></i><span>Master Data</span><i class="fas fa-chevron-right" style="font-size:10px"></i><strong>Material</strong></nav>
-<div class="mp-hero"><div class="mp-hero-icon"><i class="fas fa-boxes-stacked"></i></div><div><h1>Material Master</h1><p>Kelola data material, spesifikasi, unit, dan harga.</p></div></div>
-<div class="mp-card">
-  <div class="mp-toolbar">
-    <div><h2 class="mp-toolbar-title">Daftar Material</h2><p class="mp-toolbar-subtitle">Cari, urutkan, dan kelola master material.</p></div>
-    <div class="mp-toolbar-actions">
-      <input id="search" type="text" class="form-control" placeholder="Cari kode, nama, class, grade..." />
-      <button id="btnAdd" class="btn btn-primary mp-add-btn" data-bs-toggle="modal" data-bs-target="#mmaterialAdd"><i class="ti ti-plus"></i> Tambah Material</button>
-    </div>
-  </div>
-  <div class="mp-table-wrap">
-                <table class="table table-striped table-hover text-nowrap mb-0 align-middle" id="mainTable" style="border-collapse: collapse; border-radius: 10px; overflow: hidden;">
-                    <thead class="text-dark fs-3">
-                        <tr>
-                            <th class="border-bottom-0 cursor-pointer" data-order="material" style="text-align: center; vertical-align: middle;">Material <span class="sort-icon"></span></th>
-                            <th class="border-bottom-0 cursor-pointer" data-order="material_name" style="text-align: center; vertical-align: middle;">Nama <span class="sort-icon"></span></th>
-                            <th class="border-bottom-0 cursor-pointer" data-order="material_class" style="text-align: center; vertical-align: middle;">Class <span class="sort-icon"></span></th>
-                            <th class="border-bottom-0 cursor-pointer" data-order="grade" style="text-align: center; vertical-align: middle;">Grade <span class="sort-icon"></span></th>
-                            <th class="border-bottom-0" style="text-align: center; vertical-align: middle;">Stock</th>
-                            <th class="border-bottom-0" style="text-align: center; vertical-align: middle;">HTC</th>
-                            <th class="border-bottom-0" style="text-align: center; vertical-align: middle;">Spec</th>
-                            <th class="border-bottom-0" style="text-align: center; vertical-align: middle;">Unit</th>
-                            <th class="border-bottom-0 cursor-pointer" data-order="unit_price" style="text-align: center; vertical-align: middle;">Unit Price <span class="sort-icon"></span></th>
-                            <th class="border-bottom-0" style="text-align: center; vertical-align: middle;">Remark</th>
-                            <th class="border-bottom-0" style="text-align: center; vertical-align: middle;"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body" class="fs-3" style="border: 2px solid #fff;">
-                        <!-- filled by AJAX -->
-                    </tbody>
-                </table>
-  </div>
-  <div class="mp-footer">
-    <div id="info" class="text-muted small"></div>
-    <div id="pagination"></div>
-  </div>
-</div>
-</div></section></div>
-
-<!-- MODAL ADD -->
-<div class="modal fade" id="mmaterialAdd" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <form id="materialAdd">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">CD Material - Tambah</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <div class="row g-2">
-
-                    <div class="col-md-6">
-                        <label class="form-label">Material *</label>
-                        <input name="material" class="form-control" placeholder="Input disini.." required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Material Name *</label>
-                        <input name="material_name" class="form-control" placeholder="Input disini.." required>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">Class</label>
-                        <select id="classAdd" class="form-control" required></select>
-                        <input type="hidden" id="hiddenclassAdd" name="class">
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">Grade</label>
-                        <select id="gradeAdd" class="form-control" required></select>
-                        <input type="hidden" id="hiddengradeAdd" name="grade">
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">Stock</label>
-                        <input name="stock" class="form-control" placeholder="Input disini..">
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">HTC</label>
-                        <input name="htc" class="form-control" placeholder="Input disini..">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Spec</label>
-                        <input name="mat_spec" class="form-control" placeholder="Input disini..">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Unit</label>
-                        <input name="mat_unit" class="form-control" placeholder="Input disini..">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Unit Price</label>
-                        <input name="unit_price" type="number" step="0.01" class="form-control" placeholder="Input disini..">
-                    </div>
-
-                    <div class="col-md-12">
-                        <label class="form-label">Remark</label>
-                        <input name="remark" class="form-control" placeholder="Input disini..">
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-            </div>
-        </div>
-        </form>
-    </div>
-</div>
-
-<!-- MODAL EDIT -->
-<div class="modal fade" id="mmaterialEdit" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <form id="materialEdit">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">CD Material - Edit</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <input type="hidden" name="orig_material">
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <label class="form-label">Material *</label>
-                        <input name="material" class="form-control" placeholder="Input disini.." required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Material Name *</label>
-                        <input name="material_name" class="form-control" placeholder="Input disini.." required>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Class</label>
-                        <select id="classEdit" class="form-control" required></select>
-                        <input type="hidden" id="hiddenclassEdit" name="class">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Grade</label>
-                        <select id="gradeEdit" class="form-control" required></select>
-                        <input type="hidden" id="hiddengradeEdit" name="grade">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Stock</label>
-                        <input name="stock" class="form-control" placeholder="Input disini..">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">HTC</label>
-                        <input name="htc" class="form-control" placeholder="Input disini..">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Spec</label>
-                        <input name="mat_spec" class="form-control" placeholder="Input disini..">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Unit</label>
-                        <input name="mat_unit" class="form-control" placeholder="Input disini..">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Unit Price</label>
-                        <input name="unit_price" type="number" step="0.01" class="form-control" placeholder="Input disini..">
-                    </div>
-                    <div class="col-md-12">
-                        <label class="form-label">Remark</label>
-                        <input name="remark" class="form-control" placeholder="Input disini..">
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="submit" class="btn btn-primary">Update</button>
-            </div>
-        </div>
-        </form>
-    </div>
-</div>
-
-
-<script>
-/* ========================== STATE ========================== */
-var state = {
-    page: 1,
-    limit: 10,
-    order: 'material',
-    dir: 'ASC',
-    search: ''
-};
-
-/* ========================== PAGE LOAD ========================== */
-$(function(){
-    let timer = null;
-    $('#search').on('keyup', function(){
-        clearTimeout(timer);
-        timer = setTimeout(function(){
-            state.search = $('#search').val();
-            state.page = 1;
-            loadPage(1);
-        }, 350);
-    });
-
-    loadPage(1);
-
-    $('#mainTable thead').on('click','th[data-order]', function(){
-        var col = $(this).data('order');
-        if (state.order === col) {
-            state.dir = state.dir === 'ASC' ? 'DESC' : 'ASC';
-        } else {
-            state.order = col;
-            state.dir = 'ASC';
-        }
-        loadPage(1);
-    });
-
-    $('#mmaterialAdd').on('shown.bs.modal', function() {
-        // SELECT2 Class
-        if (!$('#classAdd').hasClass('select2-hidden-accessible')) {
-            $('#classAdd').select2({
-                tags: true,
-                placeholder: '- PILIH CLASS -',
-                width: '100%',
-                dropdownParent: $('#mmaterialAdd'),
-                ajax: {
-                    url: '<?= base_url("material/get_class") ?>',
-                    dataType: 'json',
-                    processResults: function(data){ return { results: data }; }
-                }
-            }).on('select2:select', function(e){
-                $('#hiddenclassAdd').val(e.params.data.id);
-            });
-        }
-
-        // SELECT2 Grade
-        if (!$('#gradeAdd').hasClass('select2-hidden-accessible')) {
-            $('#gradeAdd').select2({
-                tags: true,
-                placeholder: '- PILIH GRADE -',
-                width: '100%',
-                dropdownParent: $('#mmaterialAdd'),
-                ajax: {
-                    url: '<?= base_url("material/get_grades") ?>',
-                    dataType: 'json',
-                    processResults: function(data){ return { results: data }; }
-                }
-            }).on('select2:select', function(e){
-                $('#hiddengradeAdd').val(e.params.data.text.toUpperCase());
-            });
-        }
-    });
-
-    $('#materialAdd').on('submit', function(e){
-        e.preventDefault();
-
-        var data = {
-            material: $('input[name="material"]').val(),
-            material_name: $('input[name="material_name"]').val(),
-            class: $('#classAdd').select2('data')[0] ? $('#classAdd').select2('data')[0].text : '',
-            grade: $('#gradeAdd').select2('data')[0] ? $('#gradeAdd').select2('data')[0].text : '',
-            stock: $('input[name="stock"]').val(),
-            htc: $('input[name="htc"]').val(),
-            mat_spec: $('input[name="mat_spec"]').val(),
-            mat_unit: $('input[name="mat_unit"]').val(),
-            unit_price: $('input[name="unit_price"]').val(),
-            remark: $('input[name="remark"]').val()
-        };
-
-        console.log('DATA SUBMIT:', data);
-
-        $.post("<?= base_url('material/create'); ?>", data, function(resp){
-            var r = typeof resp === 'string' ? JSON.parse(resp) : resp;
-            showToast(r.status ? 'success' : 'error', r.message);
-
-            if(r.status){
-                $('#mmaterialAdd').modal('hide');
-                $('#materialAdd')[0].reset();
-                $('#classAdd, #gradeAdd').val(null).trigger('change');
-                loadPage(1);
-            }
-        }).fail(function(xhr){
-            console.error('AJAX ERROR:', xhr.responseText);
-            showToast('error', 'Terjadi kesalahan server!');
-        });
-    });
-
-    // fungsi preload sama persis
-    function preloadSelect2Value(selectId, hiddenId, value){
-        if(!value) return;
-
-        // Buat option agar Select2 mengenali value
-        let option = new Option(value, value, true, true);
-        $(selectId).append(option).trigger('change');
-
-        // Isi hidden input agar form submit dapat value
-        $(hiddenId).val(value);
-    }
-
-    $('#mmaterialEdit').on('shown.bs.modal', function() {
-        if (!$('#classEdit').hasClass('select2-hidden-accessible')) {
-            $('#classEdit').select2({
-                tags:true,
-                placeholder:'- PILIH CLASS -',
-                width:'100%',
-                dropdownParent: $('#mmaterialEdit'),
-                ajax:{
-                    url:'<?= base_url("material/get_class") ?>',
-                    dataType:'json',
-                    processResults:function(data){ return { results:data }; }
-                }
-            }).on('select2:select', function(e){
-                $('#hiddenclassEdit').val(e.params.data.id);
-            });
-        }
-
-        if (!$('#gradeEdit').hasClass('select2-hidden-accessible')) {
-            $('#gradeEdit').select2({
-                tags:true,
-                placeholder:'- PILIH GRADE -',
-                width:'100%',
-                dropdownParent: $('#mmaterialEdit'),
-                ajax:{
-                    url:'<?= base_url("material/get_grades") ?>',
-                    dataType:'json',
-                    processResults:function(data){ return { results:data }; }
-                }
-            }).on('select2:select', function(e){
-                $('#hiddengradeEdit').val(e.params.data.text);
-            });
-        }
-    });
-
-    // SUBMIT EDIT MATERIAL
-    $('#materialEdit').on('submit', function(e){
-        e.preventDefault(); // cegah reload page
-
-        // Ambil semua value input biasa
-        var material = $('#materialEdit input[name="material"]').val().trim();
-        var material_name = $('#materialEdit input[name="material_name"]').val().trim();
-        var stock = $('#materialEdit input[name="stock"]').val().trim();
-        var htc = $('#materialEdit input[name="htc"]').val().trim();
-        var mat_spec = $('#materialEdit input[name="mat_spec"]').val().trim();
-        var mat_unit = $('#materialEdit input[name="mat_unit"]').val().trim();
-        var unit_price = $('#materialEdit input[name="unit_price"]').val().trim();
-        var remark = $('#materialEdit input[name="remark"]').val().trim();
-        var orig_material = $('#materialEdit input[name="orig_material"]').val();
-
-        // Ambil value dari Select2 (hidden input)
-        var material_class = $('#hiddenclassEdit').val();
-        var grade = $('#hiddengradeEdit').val();
-
-        var data = {
-            orig_material: orig_material,
-            material: material,
-            material_name: material_name,
-            class: material_class,
-            grade: grade,
-            stock: stock,
-            htc: htc,
-            mat_spec: mat_spec,
-            mat_unit: mat_unit,
-            unit_price: unit_price,
-            remark: remark
-        };
-
-        console.log('DATA SUBMIT EDIT:', data);
-
-        $.post("<?= base_url('material/update'); ?>", data)
-        .done(function(resp){
-            var r = typeof resp==='string' ? JSON.parse(resp) : resp;
-            showToast(r.status ? 'success':'error', r.message);
-            if(r.status){
-                $('#mmaterialEdit').modal('hide');
-                $('#materialEdit')[0].reset();
-                $('#classEdit, #gradeEdit').val(null).trigger('change');
-                loadPage(1);
-            }
-        })
-        .fail(function(xhr){
-            console.error('AJAX ERROR:', xhr.responseText);
-            showToast('error','Terjadi kesalahan server!');
-        });
-    });
-
-
-    /* EXPORT */
-    $('#exportExcel').on('click', function(){
-        window.location = "<?= base_url('material/export_excel'); ?>?search="+state.search+"&order="+state.order+"&dir="+state.dir;
-    });
-    $('#exportPdf').on('click', function(){
-        window.location = "<?= base_url('material/export_pdf'); ?>?search="+state.search+"&order="+state.order+"&dir="+state.dir;
-    });
-});
-
-/* ========================== LOAD PAGE ========================== */
-function loadPage(page){
-    state.page = page;
-    $('#table-body').html('<tr><td style="text-align: center" colspan="11">Loading...</td></tr>');
-    $.get("<?= base_url('material/load_data'); ?>", state, function(res){
-        let data = typeof res === 'string' ? JSON.parse(res) : res;
-        renderTable(data.rows);
-        $('#pagination').html(data.pagination);
-        $('#info').text('Menampilkan '+data.rows.length+' dari '+data.total);
-    }, 'json');
+/* =========================================================
+   MATERIAL CODE PAGE
+========================================================= */
+.material-page {
+    padding: 22px;
+    min-height: calc(100vh - 70px);
+    background: #F5F8FC;
+    color: #334E68;
 }
 
-/* ========================== RENDER TABLE ========================== */
-function renderTable(rows){
-    let html = '';
-    if (!rows || rows.length === 0) {
-        html = '<tr><td style="text-align: center" colspan="11">Tidak ada data</td></tr>';
-    } else {
-        rows.forEach(r => {
+.material-page * {
+    box-sizing: border-box;
+}
+
+.material-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.material-title h3 {
+    margin: 0 0 5px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #243B53;
+}
+
+.material-title p {
+    margin: 0;
+    font-size: 12px;
+    color: #8493A5;
+}
+
+.material-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.material-btn {
+    height: 37px;
+    padding: 0 13px;
+    border: 1px solid #DCE5EE;
+    border-radius: 7px;
+    background: #FFFFFF;
+    color: #334E68;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.material-btn:hover {
+    background: #F1F6FB;
+    border-color: #B9CCDE;
+}
+
+.material-btn.primary {
+    background: #3976AD;
+    color: #FFFFFF;
+    border-color: #3976AD;
+}
+
+.material-btn.primary:hover {
+    background: #2F6596;
+}
+
+.material-btn.danger {
+    color: #D62828;
+    border-color: #F1D5D5;
+}
+
+.material-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.material-filter-bar {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.2fr)
+                           minmax(180px, 1fr)
+                           minmax(180px, 1fr);
+    gap: 15px;
+    padding: 15px 18px;
+    background: #FFFFFF;
+    border: 1px solid #E8EEF4;
+    border-radius: 10px;
+    margin-bottom: 18px;
+}
+
+.material-filter-item label,
+.material-field label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #52677D;
+}
+
+.material-filter-item input,
+.material-filter-item select {
+    width: 100%;
+    height: 37px;
+    padding: 0 10px;
+    border: 1px solid #DCE5EE;
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: #334E68;
+    font-size: 12px;
+    outline: none;
+}
+
+.material-filter-item input:focus,
+.material-filter-item select:focus {
+    border-color: #3976AD;
+    box-shadow: 0 0 0 3px rgba(57,118,173,.08);
+}
+
+/* Main layout */
+.material-layout {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 17px;
+    align-items: start;
+}
+
+.material-card {
+    background: #FFFFFF;
+    border: 1px solid #E5ECF3;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(30,60,90,.035);
+    overflow: hidden;
+}
+
+.material-card-header {
+    min-height: 55px;
+    padding: 14px 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid #EDF1F5;
+}
+
+.material-card-header h5 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #243B53;
+}
+
+.material-card-header small {
+    color: #8493A5;
+    font-size: 10px;
+}
+
+.material-card-header .badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 6px 9px;
+}
+
+.material-list-body {
+    padding: 12px;
+}
+
+.material-list-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #8493A5;
+    font-size: 10px;
+}
+
+.material-table-wrapper {
+    max-height: 680px;
+    overflow: auto;
+}
+
+.material-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.material-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 10px 9px;
+    background: #F3F7FB;
+    color: #52677D;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 1px solid #E2E8F0;
+    white-space: nowrap;
+}
+
+.material-table tbody td {
+    padding: 9px;
+    border-bottom: 1px solid #EDF1F5;
+    color: #52677D;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.material-table tbody tr:hover {
+    background: #F5F8FC;
+}
+
+.material-table tbody tr.active {
+    background: #EAF2F9;
+}
+
+.material-table tbody tr.active td {
+    color: #28669F;
+    font-weight: 700;
+}
+
+.material-table td:first-child {
+    width: 105px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.material-table td:last-child {
+    min-width: 130px;
+}
+
+.material-empty {
+    padding: 30px 10px !important;
+    text-align: center;
+    color: #8493A5 !important;
+    cursor: default !important;
+}
+
+.material-loading {
+    padding: 30px 10px;
+    text-align: center;
+    color: #8493A5;
+    font-size: 12px;
+}
+
+/* Detail form */
+.material-detail-body {
+    padding: 19px;
+}
+
+.material-section {
+    min-width: 0;
+    margin-bottom: 20px;
+    padding: 14px;
+    border: 1px solid #E5ECF3;
+    border-radius: 8px;
+    background: #FFFFFF;
+}
+
+.material-section:last-child {
+    margin-bottom: 0;
+}
+
+.material-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    margin-bottom: 13px;
+    border-bottom: 1px solid #EDF1F5;
+}
+
+.material-section-title i {
+    color: #3976AD;
+    font-size: 14px;
+}
+
+.material-section-title h6 {
+    margin: 0;
+    color: #3976AD;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.material-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px 18px;
+}
+
+.material-field {
+    min-width: 0;
+}
+
+.material-field.full {
+    grid-column: 1 / -1;
+}
+
+.material-field label .required {
+    color: #D62828;
+}
+
+.material-field input,
+.material-field select,
+.material-field textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    border: 1px solid #DCE5EE;
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: #334E68;
+    font-size: 12px;
+    padding: 8px 10px;
+    outline: none;
+    transition: .2s;
+}
+
+.material-field input,
+.material-field select {
+    height: 37px;
+}
+
+.material-field textarea {
+    min-height: 65px;
+    resize: vertical;
+}
+
+.material-field input:focus,
+.material-field select:focus,
+.material-field textarea:focus {
+    border-color: #3976AD;
+    box-shadow: 0 0 0 3px rgba(57,118,173,.08);
+}
+
+.material-field input[readonly] {
+    background: #F3F6F9;
+    color: #8493A5;
+}
+
+.material-radio-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-height: 37px;
+    padding: 0 10px;
+    border: 1px solid #DCE5EE;
+    border-radius: 6px;
+}
+
+.material-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: #52677D;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.material-radio input {
+    width: auto;
+    height: auto;
+    margin: 0;
+    accent-color: #3976AD;
+}
+
+.material-price-other {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.material-price-other .material-section {
+    margin-bottom: 0;
+}
+
+.material-field + .material-field {
+    margin-top: 12px;
+}
+
+.material-detail-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 19px;
+    border-top: 1px solid #EDF1F5;
+    background: #FAFCFE;
+}
+
+.material-mode {
+    color: #8493A5;
+    font-size: 11px;
+}
+
+.material-mode strong {
+    color: #3976AD;
+}
+
+.material-audit {
+    color: #8493A5;
+    font-size: 10px;
+    line-height: 1.8;
+}
+
+@media(max-width: 1100px) {
+    .material-layout {
+        grid-template-columns: 280px minmax(0, 1fr);
+    }
+}
+
+@media(max-width: 767px) {
+    .material-page {
+        padding: 14px;
+    }
+
+    .material-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .material-filter-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .material-form-grid,
+    .material-price-other {
+        grid-template-columns: 1fr;
+    }
+
+    .material-field.full {
+        grid-column: auto;
+    }
+
+    .material-toolbar {
+        width: 100%;
+    }
+
+    .material-toolbar .material-btn {
+        flex: 1;
+    }
+
+    .material-table-wrapper {
+        max-height: 280px;
+    }
+}
+
+
+/* =========================================================
+   MATERIAL CODE - LAYOUT REFINEMENT
+   Overrides for spacing, alignment and responsive layout
+========================================================= */
+
+.material-page {
+    padding: 20px;
+}
+
+.material-header {
+    margin-bottom: 15px;
+    gap: 12px;
+}
+
+.material-title h3 {
+    font-size: 21px;
+    line-height: 1.25;
+}
+
+.material-toolbar {
+    gap: 6px;
+}
+
+.material-btn {
+    height: 35px;
+    padding: 0 11px;
+    font-size: 11px;
+}
+
+/* Filter */
+.material-filter-bar {
+    grid-template-columns:
+        minmax(180px, 1.2fr)
+        minmax(180px, 1fr)
+        minmax(180px, 1fr);
+    gap: 13px;
+    padding: 13px 15px;
+    margin-bottom: 14px;
+}
+
+/* Main two-column layout */
+.material-layout {
+    grid-template-columns: minmax(245px, 0.30fr) minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+}
+
+.material-card {
+    min-width: 0;
+}
+
+.material-card-header {
+    min-height: 51px;
+    padding: 12px 15px;
+}
+
+.material-list-body {
+    padding: 11px;
+}
+
+.material-table-wrapper {
+    max-height: 620px;
+}
+
+/* Detail content */
+.material-detail-body {
+    padding: 14px;
+}
+
+.material-section {
+    min-width: 0;
+    margin-bottom: 13px;
+    padding: 12px;
+}
+
+.material-section-title {
+    gap: 7px;
+    padding-bottom: 8px;
+    margin-bottom: 11px;
+}
+
+.material-section-title h6 {
+    font-size: 11px;
+}
+
+.material-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 14px;
+    row-gap: 11px;
+}
+
+.material-field {
+    min-width: 0;
+    margin: 0 !important;
+}
+
+.material-field + .material-field {
+    margin-top: 0 !important;
+}
+
+.material-field label {
+    margin-bottom: 5px;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.material-field input,
+.material-field select {
+    height: 35px;
+    padding: 7px 9px;
+    font-size: 11px;
+}
+
+.material-field textarea {
+    min-height: 58px;
+    padding: 8px 9px;
+    font-size: 11px;
+}
+
+.material-price-other {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 13px;
+}
+
+.material-price-other .material-section {
+    margin-bottom: 0;
+}
+
+.material-price-other .material-field + .material-field {
+    margin-top: 11px !important;
+}
+
+/* Balance Control alignment */
+.material-radio-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 22px;
+    min-height: 35px;
+    padding: 0 10px;
+}
+
+.material-field .material-radio {
+    display: inline-flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    margin: 0 !important;
+    padding: 0;
+    font-size: 10px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.material-field .material-radio input {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    padding: 0;
+    accent-color: #3976AD;
+}
+
+/* List table */
+.material-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 10px;
+}
+
+.material-table thead th {
+    padding: 9px 8px;
+    font-size: 10px;
+    letter-spacing: .1px;
+}
+
+.material-table tbody td {
+    padding: 9px 8px;
+    line-height: 1.4;
+}
+
+.material-table td:first-child {
+    width: 42%;
+}
+
+.material-table tbody tr {
+    transition: background .15s ease;
+}
+
+.material-table tbody tr:hover {
+    background: #F2F7FC;
+}
+
+.material-table tbody tr.active {
+    background: #EAF2F9;
+}
+
+/* Footer */
+.material-detail-footer {
+    padding: 10px 15px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .material-page {
+        padding: 15px;
+    }
+
+    .material-layout {
+        grid-template-columns: minmax(220px, 0.28fr) minmax(0, 1fr);
+        gap: 11px;
+    }
+
+    .material-detail-body {
+        padding: 11px;
+    }
+
+    .material-section {
+        padding: 10px;
+    }
+
+    .material-form-grid {
+        column-gap: 11px;
+        row-gap: 10px;
+    }
+
+    .material-toolbar {
+        gap: 5px;
+    }
+
+    .material-btn {
+        padding: 0 9px;
+    }
+}
+
+@media (max-width: 767px) {
+    .material-page {
+        padding: 12px;
+    }
+
+    .material-header {
+        align-items: flex-start;
+    }
+
+    .material-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .material-filter-bar {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 11px;
+    }
+
+    .material-form-grid,
+    .material-price-other {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .material-field.full {
+        grid-column: auto;
+    }
+
+    .material-toolbar {
+        width: 100%;
+    }
+
+    .material-toolbar .material-btn {
+        flex: 1 1 auto;
+    }
+
+    .material-table-wrapper {
+        max-height: 280px;
+    }
+}
+
+@media print {
+    .material-toolbar,
+    .material-filter-bar,
+    .material-list-card {
+        display: none !important;
+    }
+
+    .material-page {
+        padding: 0;
+        background: #FFFFFF;
+    }
+
+    .material-layout {
+        display: block;
+    }
+
+    .material-card {
+        box-shadow: none;
+        border: 0;
+    }
+}
+
+</style>
+
+<div class="material-page">
+
+    <!-- HEADER AND TOOLBAR -->
+    <div class="material-header">
+        <div class="material-title">
+            <h3>Material Code</h3>
+            <p>Material master data management</p>
+        </div>
+
+        <div class="material-toolbar">
+            <button type="button" class="material-btn" id="btnClose">
+                <i class="bi bi-x-circle"></i> Close
+            </button>
+
+            <button type="button" class="material-btn" id="btnQuery">
+                <i class="bi bi-search"></i> Query
+            </button>
+
+            <button type="button" class="material-btn" id="btnNew">
+                <i class="bi bi-plus-lg"></i> New
+            </button>
+
+            <button type="button" class="material-btn danger"
+                    id="btnDelete" disabled>
+                <i class="bi bi-trash3"></i> Delete
+            </button>
+
+            <button type="button" class="material-btn primary" id="btnSave">
+                <i class="bi bi-check-lg"></i> Save
+            </button>
+
+            <button type="button" class="material-btn" id="btnPrint">
+                <i class="bi bi-printer"></i> Print
+            </button>
+        </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="material-filter-bar">
+
+        <div class="material-filter-item">
+            <label>Material</label>
+            <input type="text" id="filterMaterial"
+                   placeholder="Enter material code">
+        </div>
+
+        <div class="material-filter-item">
+            <label>Material Class</label>
+            <select id="filterClass1">
+                <option value="">ALL</option>
+            </select>
+        </div>
+
+        <div class="material-filter-item">
+            <label>Using Class</label>
+            <input type="text" id="filterUsingClass"
+                   placeholder="ALL">
+        </div>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="material-layout">
+
+        <!-- MATERIAL LIST -->
+        <div class="material-card">
+
+            <div class="material-card-header">
+                <h5>
+                    <i class="bi bi-list-ul me-2"></i>
+                    Material List
+                </h5>
+                <small id="materialTotal">0 items</small>
+            </div>
+
+            <div class="material-list-body">
+
+                <div class="material-list-summary">
+                    <span>Available Materials</span>
+                    <span id="listCount">0 records</span>
+                </div>
+
+                <div class="material-table-wrapper">
+                    <table class="material-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materialListBody">
+                            <tr>
+                                <td colspan="2" class="material-empty">
+                                    Click Query to load materials.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- MATERIAL DETAIL -->
+        <div class="material-card">
+
+            <div class="material-card-header">
+                <div>
+                    <h5>Material Detail</h5>
+                    <small>Material information and configuration</small>
+                </div>
+
+                <span class="badge bg-light text-primary" id="formStatus">
+                    New Record
+                </span>
+            </div>
+
+            <form id="materialForm" autocomplete="off">
+
+                <div class="material-detail-body">
+
+                    <!-- BASIC INFORMATION -->
+                    <div class="material-section">
+
+                        <div class="material-section-title">
+                            <i class="bi bi-info-circle"></i>
+                            <h6>Basic Information</h6>
+                        </div>
+
+                        <div class="material-form-grid">
+
+                            <div class="material-field">
+                                <label>Material Code <span class="required">*</span></label>
+                                <input type="text" name="material" id="material"
+                                       maxlength="12" required
+                                       placeholder="Material Code">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Name</label>
+                                <input type="text" name="material_name"
+                                       id="material_name" maxlength="40">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Abbreviation</label>
+                                <input type="text" name="material_sname"
+                                       id="material_sname" maxlength="20">
+                            </div>
+
+                            <div class="material-field full">
+                                <label>Remark</label>
+                                <textarea name="remark" id="remark"
+                                          maxlength="1000"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- CLASS -->
+                    <div class="material-section">
+
+                        <div class="material-section-title">
+                            <i class="bi bi-tags"></i>
+                            <h6>Class</h6>
+                        </div>
+
+                        <div class="material-form-grid">
+
+                            <div class="material-field full">
+                                <label>Material Class</label>
+                                <select name="class1" id="class1">
+                                    <option value="">Select Material Class</option>
+                                </select>
+                            </div>
+
+                            <div class="material-field">
+                                <label>Balance Control</label>
+                                <div class="material-radio-group">
+                                    <label class="material-radio">
+                                        <input type="radio" name="balance_control"
+                                               value="Y">
+                                        Yes
+                                    </label>
+                                    <label class="material-radio">
+                                        <input type="radio" name="balance_control"
+                                               value="N">
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="material-field">
+                                <label>Import Class</label>
+                                <input type="text" name="import_class"
+                                       id="import_class" maxlength="1">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Using Class</label>
+                                <input type="text" name="class2"
+                                       id="class2" maxlength="10">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Feed Class</label>
+                                <input type="text" name="class3"
+                                       id="class3" maxlength="10">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- SPEC -->
+                    <div class="material-section">
+
+                        <div class="material-section-title">
+                            <i class="bi bi-card-text"></i>
+                            <h6>Spec</h6>
+                        </div>
+
+                        <div class="material-form-grid">
+
+                            <div class="material-field full">
+                                <label>Specification</label>
+                                <textarea name="mat_spec" id="mat_spec"
+                                          maxlength="2000"></textarea>
+                            </div>
+
+                            <div class="material-field full">
+                                <label>Size</label>
+                                <textarea name="mat_size" id="mat_size"
+                                          maxlength="2000"></textarea>
+                            </div>
+
+                            <div class="material-field">
+                                <label>Unit</label>
+                                <select name="mat_unit" id="mat_unit">
+                                    <option value="">Select Unit</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- PRICE AND OTHERS -->
+                    <div class="material-price-other">
+
+                        <div class="material-section">
+
+                            <div class="material-section-title">
+                                <i class="bi bi-currency-dollar"></i>
+                                <h6>Price</h6>
+                            </div>
+
+                            <div class="material-field">
+                                <label>Unit Price</label>
+                                <input type="number" name="unit_price"
+                                       id="unit_price" step="0.001">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Previous U/P</label>
+                                <input type="number" name="before_unit_price"
+                                       id="before_unit_price" step="0.001">
+                            </div>
+
+                            <div class="material-field">
+                                <label>VAT Rate (%)</label>
+                                <input type="number" name="vat_rate"
+                                       id="vat_rate" step="0.001">
+                            </div>
+
+                        </div>
+
+                        <div class="material-section">
+
+                            <div class="material-section-title">
+                                <i class="bi bi-gear"></i>
+                                <h6>Others</h6>
+                            </div>
+
+                            <div class="material-field">
+                                <label>Delivery Day</label>
+                                <input type="number" name="delivery_day"
+                                       id="delivery_day" min="0" step="1">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Contract Group</label>
+                                <input type="text" name="contract_group"
+                                       id="contract_group" maxlength="10">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Deleted</label>
+                                <input type="text" id="deleted_status"
+                                       value="No" readonly>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ADDITIONAL SETTINGS -->
+                    <div class="material-section">
+
+                        <div class="material-section-title">
+                            <i class="bi bi-sliders"></i>
+                            <h6>Additional Settings</h6>
+                        </div>
+
+                        <div class="material-form-grid">
+
+                            <div class="material-field">
+                                <label>Optimum Quantity</label>
+                                <input type="number" name="optimum_qty"
+                                       id="optimum_qty" step="0.001">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Formula</label>
+                                <input type="text" name="formula"
+                                       id="formula" maxlength="12">
+                            </div>
+
+                            <div class="material-field">
+                                <label>BL Allowance</label>
+                                <input type="number" name="bl_allowance"
+                                       id="bl_allowance" step="0.001">
+                            </div>
+
+                            <div class="material-field">
+                                <label>RCV Allowance</label>
+                                <input type="number" name="rcv_allowance"
+                                       id="rcv_allowance" step="0.001">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Last In Date</label>
+                                <input type="date" id="last_in_date_display">
+                                <input type="hidden" name="last_in_date"
+                                       id="last_in_date">
+                            </div>
+
+                            <div class="material-field">
+                                <label>Spare Part</label>
+                                <select name="yn_spare" id="yn_spare">
+                                    <option value="">Select</option>
+                                    <option value="Y">Yes</option>
+                                    <option value="N">No</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- AUDIT -->
+                    <div class="material-section"
+                         id="auditSection" style="display:none;">
+
+                        <div class="material-section-title">
+                            <i class="bi bi-clock-history"></i>
+                            <h6>Audit Information</h6>
+                        </div>
+
+                        <div class="material-audit" id="auditInformation"></div>
+
+                    </div>
+
+                </div>
+
+                <div class="material-detail-footer">
+                    <div class="material-mode">
+                        Current Mode: <strong id="currentMode">New Record</strong>
+                    </div>
+
+                    <div class="material-audit">
+                        <span class="required">*</span> Required field
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    const BASE_URL = <?= json_encode($base_url) ?>;
+    const CSRF_NAME = <?= json_encode($csrf_name) ?>;
+    let csrfHash = <?= json_encode($csrf_hash) ?>;
+
+    const URLS = {
+        list: BASE_URL + 'material/get_materials',
+        detail: BASE_URL + 'material/get_material',
+        dropdowns: BASE_URL + 'material/get_dropdowns',
+        nextCode: BASE_URL + 'material/get_next_material_code',
+        save: BASE_URL + 'material/save',
+        delete: BASE_URL + 'material/delete'
+    };
+
+    const $ = function (id) {
+        return document.getElementById(id);
+    };
+
+    const form = $('materialForm');
+    const listBody = $('materialListBody');
+
+    let currentMode = 'insert';
+    let selectedMaterial = null;
+    let materialData = [];
+    let dropdowns = {
+        class1: [],
+        mat_unit: []
+    };
+
+    /* =====================================================
+       HELPERS
+    ===================================================== */
+
+    function escapeHtml(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function showMessage(type, message) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: type,
+                text: message,
+                confirmButtonColor: '#3976AD'
+            });
+        } else {
+            alert(message);
+        }
+    }
+
+    function confirmAction(title, message) {
+        if (typeof Swal !== 'undefined') {
+            return Swal.fire({
+                icon: 'warning',
+                title: title,
+                text: message,
+                showCancelButton: true,
+                confirmButtonText: 'Yes, continue',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#D62828'
+            }).then(function (result) {
+                return result.isConfirmed;
+            });
+        }
+
+        return Promise.resolve(confirm(message));
+    }
+
+    async function loadNextMaterialCode() {
+        $('material').value = 'Generating...';
+
+        try {
+            const result = await request(URLS.nextCode);
+
+            $('material').value = result.material;
+
+        } catch (error) {
+            $('material').value = '';
+
+            showMessage('error', error.message);
+        }
+    }
+
+    async function request(url, options) {
+        const response = await fetch(url, {
+            ...(options || {}),
+            credentials: 'same-origin'
+        });
+
+        const responseText = await response.text();
+
+        let result;
+
+        try {
+            result = JSON.parse(responseText);
+        } catch (error) {
+            console.error('Invalid JSON response:', {
+                url: url,
+                status: response.status,
+                response: responseText
+            });
+
+            throw new Error(
+                'Invalid server response. HTTP ' + response.status +
+                '. Check browser console.'
+            );
+        }
+
+        if (result.csrf_hash) {
+            csrfHash = result.csrf_hash;
+        }
+
+        if (!response.ok || result.status === false) {
+            throw new Error(result.message || 'Request failed.');
+        }
+
+        return result;
+    }
+
+    async function postRequest(url, data) {
+        const formData = new FormData();
+
+        Object.keys(data).forEach(function (key) {
+            formData.append(
+                key,
+                data[key] == null ? '' : data[key]
+            );
+        });
+
+        if (CSRF_NAME) {
+            formData.append(CSRF_NAME, csrfHash);
+        }
+
+        return request(url, {
+            method: 'POST',
+            body: formData
+        });
+    }
+
+    function setButtonLoading(button, loading) {
+        if (loading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML =
+                '<i class="bi bi-arrow-repeat"></i> Processing...';
+        } else {
+            button.disabled = false;
+
+            if (button.dataset.originalHtml) {
+                button.innerHTML = button.dataset.originalHtml;
+            }
+        }
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+
+        $('currentMode').textContent =
+            mode === 'insert' ? 'New Record' : 'Edit Record';
+
+        $('formStatus').textContent =
+            mode === 'insert' ? 'New Record' : 'Editing';
+
+        $('btnDelete').disabled =
+            mode === 'insert' || !selectedMaterial;
+
+        $('material').readOnly = true;
+    }
+
+    function setSelectOptions(element, items, placeholder, selectedValue) {
+        const selected = selectedValue == null
+            ? ''
+            : String(selectedValue);
+
+        let html = '<option value="">' +
+            escapeHtml(placeholder) +
+            '</option>';
+
+        items.forEach(function (item) {
+            const value = String(item.code);
+            const label = String(item.code_name || item.code);
+
+            html += '<option value="' + escapeHtml(value) + '"' +
+                (value === selected ? ' selected' : '') +
+                '>' +
+                escapeHtml(value + ' - ' + label) +
+                '</option>';
+        });
+
+        // Preserve old inactive code when editing.
+        if (
+            selected !== '' &&
+            !items.some(function (item) {
+                return String(item.code) === selected;
+            })
+        ) {
+            html += '<option value="' + escapeHtml(selected) +
+                '" selected>' +
+                escapeHtml(selected + ' - Inactive / unavailable') +
+                '</option>';
+        }
+
+        element.innerHTML = html;
+    }
+
+    /* =====================================================
+       DROPDOWNS
+    ===================================================== */
+
+    async function loadDropdowns() {
+        const result = await request(URLS.dropdowns);
+
+        dropdowns.class1 = result.data.class1 || [];
+        dropdowns.mat_unit = result.data.mat_unit || [];
+
+        setSelectOptions(
+            $('class1'),
+            dropdowns.class1,
+            'Select Material Class'
+        );
+
+        setSelectOptions(
+            $('filterClass1'),
+            dropdowns.class1,
+            'ALL'
+        );
+
+        setSelectOptions(
+            $('mat_unit'),
+            dropdowns.mat_unit,
+            'Select Unit'
+        );
+    }
+
+    /* =====================================================
+       MATERIAL LIST
+    ===================================================== */
+
+    function getFilters() {
+        return {
+            material: $('filterMaterial').value.trim(),
+            class1: $('filterClass1').value,
+            class2: $('filterUsingClass').value.trim()
+        };
+    }
+
+    async function loadMaterials() {
+        listBody.innerHTML =
+            '<tr><td colspan="2" class="material-loading">' +
+            'Loading materials...</td></tr>';
+
+        const filters = getFilters();
+
+        const params = new URLSearchParams(filters);
+
+        try {
+            const result = await request(
+                URLS.list + '?' + params.toString()
+            );
+
+            materialData = result.data || [];
+
+            renderMaterialList(materialData);
+
+        } catch (error) {
+            listBody.innerHTML =
+                '<tr><td colspan="2" class="material-empty">' +
+                'Unable to load materials.</td></tr>';
+
+            showMessage('error', error.message);
+        }
+    }
+
+    function renderMaterialList(items) {
+        $('materialTotal').textContent = items.length + ' items';
+        $('listCount').textContent = items.length + ' records';
+
+        if (!items.length) {
+            listBody.innerHTML =
+                '<tr><td colspan="2" class="material-empty">' +
+                'No material found.</td></tr>';
+
+            return;
+        }
+
+        let html = '';
+
+        items.forEach(function (item) {
+            const active =
+                selectedMaterial === item.material ? 'active' : '';
+
             html += `
-                <tr>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.material)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.material_name)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.material_class_name)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.grade)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.stock)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.htc)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.mat_spec)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.mat_unit)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.unit_price)}</td>
-                    <td style="text-align: center; vertical-align: middle;">${escapeHtml(r.remark)}</td>
-                    <td style="text-align: center; vertical-align: middle;">
-                        <button class="btn btn-sm btn-warning me-1" onclick="showEdit('${r.material}')">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="doDelete('${r.material}')">Delete</button>
-                    </td>
+                <tr class="${active}"
+                    data-material="${escapeHtml(item.material)}">
+                    <td>${escapeHtml(item.material)}</td>
+                    <td>${escapeHtml(item.material_name || '-')}</td>
                 </tr>
             `;
         });
+
+        listBody.innerHTML = html;
     }
-    $('#table-body').html(html);
-}
 
-/* ========================== DETAIL ========================== */
-function showDetail(material){
-    $('#detailBody').html('Loading...');
-    $('#modalDetail').modal('show');
-    $.get("<?= base_url('material/detail'); ?>", {material}, function(res){
-        let r = typeof res === 'string' ? JSON.parse(res) : res;
-        if (!r.status) return $('#detailBody').html('Error');
+    async function loadMaterialDetail(material) {
+        try {
+            const result = await request(
+                URLS.detail + '?material=' +
+                encodeURIComponent(material)
+            );
 
-        let d = r.data;
-        let html = `<table class="table table-bordered">`;
-        for (let k in d){
-            html += `<tr><th>${k}</th><td>${escapeHtml(d[k]||'')}</td></tr>`;
+            selectedMaterial = material;
+
+            fillForm(result.data);
+
+            setMode('update');
+
+            renderMaterialList(materialData);
+
+        } catch (error) {
+            showMessage('error', error.message);
         }
-        html += `</table>`;
-        $('#detailBody').html(html);
+    }
+
+    /* =====================================================
+       FORM
+    ===================================================== */
+
+    async function clearForm() {
+        form.reset();
+
+        selectedMaterial = null;
+
+        $('auditSection').style.display = 'none';
+        $('auditInformation').innerHTML = '';
+
+        $('last_in_date').value = '';
+        $('last_in_date_display').value = '';
+
+        $('deleted_status').value = 'No';
+
+        setSelectOptions(
+            $('class1'),
+            dropdowns.class1,
+            'Select Material Class'
+        );
+
+        setSelectOptions(
+            $('mat_unit'),
+            dropdowns.mat_unit,
+            'Select Unit'
+        );
+
+        setMode('insert');
+
+        renderMaterialList(materialData);
+
+        await loadNextMaterialCode();
+    }
+
+    function setBalanceControl(value) {
+        const radios = document.querySelectorAll(
+            'input[name="balance_control"]'
+        );
+
+        radios.forEach(function (radio) {
+            radio.checked = radio.value === String(value || '');
+        });
+    }
+
+    function getBalanceControl() {
+        const selected = document.querySelector(
+            'input[name="balance_control"]:checked'
+        );
+
+        return selected ? selected.value : '';
+    }
+
+    function fillForm(data) {
+        form.reset();
+
+        const fields = [
+            'material',
+            'material_name',
+            'material_sname',
+            'remark',
+            'import_class',
+            'class2',
+            'class3',
+            'mat_spec',
+            'mat_size',
+            'unit_price',
+            'before_unit_price',
+            'vat_rate',
+            'delivery_day',
+            'contract_group',
+            'optimum_qty',
+            'formula',
+            'bl_allowance',
+            'rcv_allowance',
+            'yn_spare'
+        ];
+
+        fields.forEach(function (field) {
+            if ($(field)) {
+                $(field).value =
+                    data[field] == null ? '' : data[field];
+            }
+        });
+
+        setSelectOptions(
+            $('class1'),
+            dropdowns.class1,
+            'Select Material Class',
+            data.class1
+        );
+
+        setSelectOptions(
+            $('mat_unit'),
+            dropdowns.mat_unit,
+            'Select Unit',
+            data.mat_unit
+        );
+
+        setBalanceControl(data.balance_control);
+
+        // Last In Date: YYYYMMDD to YYYY-MM-DD.
+        const date = data.last_in_date || '';
+
+        if (/^\d{8}$/.test(date)) {
+            $('last_in_date_display').value =
+                date.substring(0, 4) + '-' +
+                date.substring(4, 6) + '-' +
+                date.substring(6, 8);
+        } else {
+            $('last_in_date_display').value = '';
+        }
+
+        $('last_in_date').value = date;
+
+        $('deleted_status').value =
+            data.delete_flag === 'Y' ? 'Yes' : 'No';
+
+        // Audit.
+        const audit = [];
+
+        if (data.reg_emp || data.reg_date) {
+            audit.push(
+                'Created by: ' + escapeHtml(data.reg_emp || '-') +
+                ' | Date: ' + escapeHtml(data.reg_date || '-')
+            );
+        }
+
+        if (data.mod_emp || data.mod_date) {
+            audit.push(
+                'Updated by: ' + escapeHtml(data.mod_emp || '-') +
+                ' | Date: ' + escapeHtml(data.mod_date || '-')
+            );
+        }
+
+        $('auditInformation').innerHTML = audit.join('<br>');
+        $('auditSection').style.display =
+            audit.length ? 'block' : 'none';
+    }
+
+    function getFormData() {
+        const formData = new FormData(form);
+        const data = {};
+
+        formData.forEach(function (value, key) {
+            data[key] = value;
+        });
+
+        data.mode = currentMode;
+        data.balance_control = getBalanceControl();
+
+        const date = $('last_in_date_display').value;
+
+        data.last_in_date = date
+            ? date.replace(/-/g, '')
+            : '';
+
+        return data;
+    }
+
+    /* =====================================================
+       SAVE
+    ===================================================== */
+
+    async function saveMaterial() {
+        if (!form.reportValidity()) {
+            return;
+        }
+
+        const material = $('material').value.trim();
+
+        if (!material) {
+            showMessage('warning', 'Material Code is required.');
+            $('material').focus();
+            return;
+        }
+
+        const button = $('btnSave');
+
+        setButtonLoading(button, true);
+
+        try {
+            const result = await postRequest(
+                URLS.save,
+                getFormData()
+            );
+
+            selectedMaterial = result.material;
+
+            await loadMaterials();
+            await loadMaterialDetail(result.material);
+
+            showMessage('success', result.message);
+
+        } catch (error) {
+            showMessage('error', error.message);
+        } finally {
+            setButtonLoading(button, false);
+        }
+    }
+
+    /* =====================================================
+       DELETE
+    ===================================================== */
+
+    async function deleteMaterial() {
+        if (!selectedMaterial) {
+            return;
+        }
+
+        const confirmed = await confirmAction(
+            'Delete Material?',
+            'Material ' + selectedMaterial +
+            ' will be marked as deleted.'
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        const button = $('btnDelete');
+
+        setButtonLoading(button, true);
+
+        try {
+            const result = await postRequest(URLS.delete, {
+                material: selectedMaterial
+            });
+
+            clearForm();
+            await loadMaterials();
+
+            showMessage('success', result.message);
+
+        } catch (error) {
+            showMessage('error', error.message);
+        } finally {
+            setButtonLoading(button, false);
+        }
+    }
+
+    /* =====================================================
+       EVENTS
+    ===================================================== */
+
+    $('btnQuery').addEventListener('click', loadMaterials);
+
+    $('btnNew').addEventListener('click', clearForm);
+
+    $('btnSave').addEventListener('click', saveMaterial);
+
+    $('btnDelete').addEventListener('click', deleteMaterial);
+
+    $('btnClose').addEventListener('click', function () {
+        window.location.href = BASE_URL + 'dashboard';
     });
-}
 
-function preloadSelect2Value(selectId, hiddenId, value){
-    if(!value) return;
-
-    // Buat option agar Select2 mengenali value
-    let option = new Option(value, value, true, true);
-    $(selectId).append(option).trigger('change');
-
-    // Isi hidden input agar form submit dapat value
-    $(hiddenId).val(value);
-}
-
-function showEdit(material){
-    $.get("<?= base_url('material/edit'); ?>", { material: material }, function(res){
-        if(typeof res==='string') res = JSON.parse(res);
-        if(!res.status){ alert('Error'); return; }
-
-        let d = res.data;
-        let f = $('#materialEdit');
-
-        // Isi input biasa
-        f.find('input[name="orig_material"]').val(d.material);
-        f.find('input[name="material"]').val(d.material);
-        f.find('input[name="material_name"]').val(d.material_name);
-        f.find('input[name="stock"]').val(d.stock);
-        f.find('input[name="htc"]').val(d.htc);
-        f.find('input[name="mat_spec"]').val(d.mat_spec);
-        f.find('input[name="mat_unit"]').val(d.mat_unit);
-        f.find('input[name="unit_price"]').val(d.unit_price);
-        f.find('input[name="remark"]').val(d.remark);
-
-        // Preload Select2 values
-        preloadSelect2Value('#classEdit','#hiddenclassEdit', d.material_class);
-        preloadSelect2Value('#gradeEdit','#hiddengradeEdit', d.grade);
-
-        // Tampilkan modal
-        $('#mmaterialEdit').modal('show');
+    $('btnPrint').addEventListener('click', function () {
+        window.print();
     });
-}
 
+    listBody.addEventListener('click', function (event) {
+        const row = event.target.closest('tr[data-material]');
 
-// /* ========================== EDIT ========================== */
-// function showEdit(material){
-//     $.get("<?= base_url('material/edit'); ?>", {material}, function(res){
-//         let r = typeof res === 'string' ? JSON.parse(res) : res;
-//         if (!r.status) return;
+        if (!row) {
+            return;
+        }
 
-//         let d = r.data;
-//         let f = $('#materialEdit');
-
-//         for (let k in d){
-//             f.find(`[name="${k}"]`).val(d[k]);
-//         }
-
-//         $('#mmaterialEdit').modal('show');
-//     });
-// }
-
-/* ========================== DELETE ========================== */
-function doDelete(material){
-    if (!confirm("Yakin ingin menghapus data?")) return;
-    $.post("<?= base_url('material/remove'); ?>", {material}, function(res){
-        let r = typeof res === 'string' ? JSON.parse(res) : res;
-        alert(r.message);
-        if (r.status) loadPage(state.page);
+        loadMaterialDetail(row.dataset.material);
     });
-}
 
-/* ========================== UTIL ========================== */
-function formatMaterialPrice(value){
-    if(value === null || value === undefined || value === '') return '-';
-    var n = Number(value);
-    if(!Number.isFinite(n)) return escapeHtml(value);
-    return escapeHtml(n.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
-}
-function escapeJsArg(value){
-    return String(value == null ? '' : value).replace(/\\\\/g, '\\\\\\\\').replace(/'/g, "\\\\'").replace(/[\\r\\n]/g, '');
-}
-function escapeHtml(text){
-    return $('<div/>').text(text).html();
-}
-
-function showToast(type, message){
-    const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000
+    $('last_in_date_display').addEventListener('change', function () {
+        $('last_in_date').value = this.value
+            ? this.value.replace(/-/g, '')
+            : '';
     });
-    Toast.fire({ icon: type, title: message });
-}
+
+    $('material').addEventListener('input', function () {
+        if (currentMode === 'insert') {
+            this.value = this.value.toUpperCase();
+        }
+    });
+
+    // Filter input: search when Enter is pressed.
+    $('filterMaterial').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            loadMaterials();
+        }
+    });
+
+    $('filterUsingClass').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            loadMaterials();
+        }
+    });
+
+    $('filterClass1').addEventListener('change', loadMaterials);
+
+    /* =====================================================
+       INITIALIZE
+    ===================================================== */
+
+    async function initialize() {
+        try {
+            await loadDropdowns();
+
+            setMode('insert');
+
+            await loadNextMaterialCode();
+
+            await loadMaterials();
+
+        } catch (error) {
+            console.error(error);
+            showMessage('error', error.message);
+        }
+    }
+
+    initialize();
+
+})();
 </script>

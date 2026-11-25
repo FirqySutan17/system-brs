@@ -1,369 +1,855 @@
-<style>
-:root {
-    --pav-black: #171717;
-    --pav-black-soft: #242424;
-    --pav-orange: #f97316;
-    --pav-orange-light: #fff0e5;
-    --pav-gold: #d6a84f;
-    --pav-text: #374151;
-    --pav-muted: #9ca3af;
-    --pav-bg: #f9fafb;
-    --pav-border: #e5e7eb;
+
+<?php
+$current_page = $this->uri->segment(1);
+
+$full_name = $this->session->userdata('full_name') ?: 'Administrator';
+$user_nm   = $this->session->userdata('user_nm') ?: 'ADMIN';
+
+$initials = '';
+$name_parts = preg_split('/\s+/', trim($full_name));
+
+foreach (array_slice($name_parts, 0, 2) as $part) {
+    $initials .= strtoupper(substr($part, 0, 1));
 }
-.left-sidebar { width:260px; background:#fff; border-right:1px solid var(--pav-border); box-shadow:4px 0 20px rgba(0,0,0,.05); transition:all .3s ease; }
-.left-sidebar .brand-logo { height:80px; padding:0 24px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--pav-border); width:100%; position:relative; }
-.left-sidebar .brand-logo .logo-img { display:flex; align-items:center; justify-content:center; text-decoration:none; }
-.left-sidebar .brand-logo img { width:145px; max-height:60px; height:auto; object-fit:contain; }
-.left-sidebar .close-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--pav-black); }
-.sidebar-profile { margin:18px 16px 10px; padding:14px; background:#fffaf5; border:1px solid #ffeadb; border-radius:14px; display:flex; align-items:center; gap:12px; }
-.sidebar-profile__avatar,.header-profile__avatar { flex:0 0 42px; width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,var(--pav-black),#3b3b3b); border:2px solid var(--pav-gold); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; text-transform:uppercase; }
-.sidebar-profile__info { min-width:0; }
-.sidebar-profile__name { margin:0; color:var(--pav-black); font-size:12px; font-weight:800; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sidebar-profile__username { margin:3px 0 0; color:var(--pav-muted); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sidebar-nav { padding:10px 12px 25px; }
-#sidebarnav { padding:0; margin:0; }
-.sidebar-section-title { list-style:none; padding:18px 12px 8px; margin:0; color:#a1a1aa; font-size:10px; font-weight:800; letter-spacing:1.2px; }
-.sidebar-item { list-style:none; margin-bottom:4px; }
-.left-sidebar .sidebar-link { min-height:44px; padding:10px 12px; border-radius:10px; display:flex; align-items:center; gap:12px; color:#626262 !important; font-size:13px; font-weight:600; text-decoration:none; transition:all .2s ease; }
-.left-sidebar .sidebar-link .sidebar-icon { width:22px; display:flex; align-items:center; justify-content:center; }
-.left-sidebar .sidebar-link i { font-size:18px; color:#9ca3af; transition:all .2s ease; }
-.left-sidebar .sidebar-link:hover { background:var(--pav-orange-light); color:var(--pav-black) !important; }
-.left-sidebar .sidebar-link:hover i { color:var(--pav-orange); }
-.left-sidebar .sidebar-link.active { background:linear-gradient(110deg,var(--pav-black),#303030); color:#fff !important; box-shadow:0 6px 15px rgba(0,0,0,.15); }
-.left-sidebar .sidebar-link.active i { color:var(--pav-orange); }
-.sidebar-bottom { padding:10px 12px 18px; }
-.sidebar-logout { display:flex; align-items:center; gap:12px; width:100%; min-height:44px; padding:10px 12px; border-radius:10px; color:#6b7280; text-decoration:none; font-size:13px; font-weight:600; transition:all .2s ease; }
-.sidebar-logout i { font-size:18px; }
-.sidebar-logout:hover { background:#fff0e5; color:#c2410c; }
-.app-header { background:rgba(255,255,255,.96); border-bottom:1px solid #f0f0f0; box-shadow:0 2px 12px rgba(0,0,0,.04); backdrop-filter:blur(10px); }
-.app-header .navbar { min-height:80px; padding:0 24px; }
-.app-header .nav-link { color:var(--pav-black); }
-.app-header .nav-link:hover { color:var(--pav-orange); }
-.header-profile { display:flex; align-items:center; gap:10px; }
-.header-profile__avatar { width:38px; height:38px; flex-basis:38px; font-size:12px; }
-.header-profile__name { color:var(--pav-black); font-size:12px; font-weight:700; }
-.header-profile-menu { min-width:190px; border:1px solid #f0f0f0; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.12); padding:8px; }
-.header-profile-menu .dropdown-item { border-radius:8px; padding:9px 10px; font-size:13px; }
-.header-profile-menu .dropdown-item:hover { background:#fff0e5; color:#c2410c; }
-@media(max-width:1199px) { .left-sidebar { position:fixed; left:-260px; top:0; bottom:0; z-index:1100; overflow-y:auto; } .left-sidebar.show { left:0; } }
-@media(max-width:576px) { .app-header .navbar { padding:0 15px; } .header-profile__name { display:none; } }
+
+$menu_items = [
+    [
+        'title' => 'Dashboard',
+        'icon'  => 'bi-grid-1x2',
+        'url'   => 'dashboard',
+        'key'   => 'dashboard',
+        'desc'  => 'Overview'
+    ],
+    [
+        'title' => 'Code',
+        'icon'  => 'bi-code-square',
+        'url'   => 'code',
+        'key'   => 'code',
+        'desc'  => 'General code management'
+    ],
+    [
+        'title' => 'Material Code',
+        'icon'  => 'bi-box-seam',
+        'url'   => 'material',
+        'key'   => 'material',
+        'desc'  => 'Material master'
+    ],
+    [
+        'title' => 'Goods Item',
+        'icon'  => 'bi-boxes',
+        'url'   => 'goods_item',
+        'key'   => 'goods_item',
+        'desc'  => 'Item management'
+    ],
+    [
+        'title' => 'Customer Code',
+        'icon'  => 'bi-people',
+        'url'   => 'customer_code',
+        'key'   => 'customer_code',
+        'desc'  => 'Customer master'
+    ]
+];
+?>
+
+<style>
+/* =====================================================
+   BROILER SYSTEM - SIDEBAR
+===================================================== */
+
+:root {
+    --bs-sidebar-width: 270px;
+    --bs-sidebar-collapsed: 82px;
+
+    --bs-primary: #3976AD;
+    --bs-primary-dark: #2F6596;
+    --bs-primary-light: #EAF2F9;
+    --bs-primary-soft: #F4F8FC;
+
+    --bs-heading: #243B53;
+    --bs-text: #334E68;
+    --bs-muted: #8493A5;
+    --bs-border: #E8EEF4;
+    --bs-background: #F5F8FC;
+}
+
+.app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--bs-sidebar-width);
+    height: 100vh;
+    height: 100dvh;
+    z-index: 1050;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #FFFFFF;
+    border-right: 1px solid var(--bs-border);
+
+    transition:
+        width .28s ease,
+        transform .28s ease,
+        box-shadow .28s ease;
+
+    overflow: hidden;
+}
+
+/* BRAND */
+
+.sidebar-brand {
+    min-height: 91px;
+    padding: 20px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--bs-border);
+    flex-shrink: 0;
+}
+
+.sidebar-brand-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.sidebar-brand-logo {
+    width: 43px;
+    height: 43px;
+    min-width: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #FFFFFF;
+    font-size: 21px;
+    border-radius: 13px;
+
+    background: linear-gradient(145deg, #4D8CC5, #2F6596);
+    box-shadow: 0 5px 12px rgba(57, 118, 173, .22);
+}
+
+.sidebar-brand-title {
+    color: var(--bs-heading);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -.3px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.sidebar-brand-subtitle {
+    color: var(--bs-muted);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.1px;
+    margin-top: 5px;
+    white-space: nowrap;
+}
+
+.sidebar-collapse-btn,
+.sidebar-close {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--bs-muted);
+    font-size: 17px;
+
+    transition: all .2s ease;
+}
+
+.sidebar-collapse-btn:hover,
+.sidebar-close:hover {
+    background: var(--bs-primary-light);
+    color: var(--bs-primary);
+}
+
+.sidebar-close {
+    display: none;
+}
+
+/* PROFILE */
+
+.sidebar-profile {
+    margin: 20px 15px 25px;
+    padding: 13px;
+
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    background: linear-gradient(120deg, #F4F8FC, #F8FAFD);
+    border: 1px solid #EDF2F7;
+    border-radius: 13px;
+
+    transition: all .2s ease;
+}
+
+.sidebar-profile:hover {
+    border-color: #D5E5F3;
+    background: #F0F6FC;
+}
+
+.sidebar-avatar {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 700;
+
+    background: linear-gradient(145deg, #70A4D2, #3976AD);
+    border-radius: 12px;
+}
+
+.sidebar-avatar-status {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    right: -2px;
+    bottom: -2px;
+
+    background: #22C55E;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+}
+
+.sidebar-profile-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.sidebar-profile-name {
+    color: var(--bs-heading);
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-profile-user {
+    color: var(--bs-muted);
+    font-size: 11px;
+    margin: 4px 0 0;
+}
+
+/* NAVIGATION */
+
+.sidebar-menu {
+    flex: 1;
+    padding: 0 15px 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background: #DCE5EE;
+    border-radius: 10px;
+}
+
+.sidebar-section-title {
+    padding: 0 11px;
+    margin-bottom: 12px;
+
+    color: #98A6B6;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.3px;
+    white-space: nowrap;
+}
+
+.sidebar-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-height: 47px;
+    padding: 8px 11px;
+    margin-bottom: 5px;
+
+    color: var(--bs-text);
+    text-decoration: none;
+
+    border-radius: 11px;
+    transition: all .2s ease;
+}
+
+.sidebar-link-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+    color: #71869C;
+
+    background: transparent;
+    border-radius: 9px;
+
+    transition: all .2s ease;
+}
+
+.sidebar-link-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.sidebar-link-title {
+    display: block;
+    color: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sidebar-link-desc {
+    display: block;
+    margin-top: 3px;
+    color: var(--bs-muted);
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.sidebar-link:hover {
+    color: var(--bs-primary);
+    background: var(--bs-primary-soft);
+    transform: translateX(3px);
+}
+
+.sidebar-link:hover .sidebar-link-icon {
+    color: var(--bs-primary);
+    background: #E5F0FA;
+}
+
+.sidebar-link.active {
+    color: var(--bs-primary);
+    background: linear-gradient(100deg, #EAF3FB, #F3F8FD);
+}
+
+.sidebar-link.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 0 5px 5px 0;
+    background: var(--bs-primary);
+}
+
+.sidebar-link.active .sidebar-link-icon {
+    color: #FFFFFF;
+    background: linear-gradient(145deg, #4D8CC5, #3976AD);
+    box-shadow: 0 3px 7px rgba(57, 118, 173, .2);
+}
+
+.sidebar-link.active .sidebar-link-title {
+    font-weight: 700;
+}
+
+/* FOOTER */
+
+.sidebar-footer {
+    padding: 14px 15px 18px;
+    border-top: 1px solid var(--bs-border);
+    flex-shrink: 0;
+}
+
+.sidebar-footer-label {
+    color: #A0ADBA;
+    font-size: 9px;
+    text-align: center;
+    margin-top: 12px;
+}
+
+.sidebar-logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-height: 44px;
+    padding: 8px 11px;
+
+    color: #D65B5B;
+    text-decoration: none;
+    border-radius: 10px;
+
+    transition: all .2s ease;
+}
+
+.sidebar-logout i {
+    width: 34px;
+    min-width: 34px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.sidebar-logout span {
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sidebar-logout:hover {
+    color: #C62828;
+    background: #FFF2F2;
+}
+
+/* COLLAPSED DESKTOP */
+
+body.sidebar-collapsed .app-sidebar {
+    width: var(--bs-sidebar-collapsed);
+}
+
+body.sidebar-collapsed .sidebar-brand {
+    justify-content: center;
+    padding: 20px 10px;
+}
+
+body.sidebar-collapsed .sidebar-brand-content {
+    justify-content: center;
+}
+
+body.sidebar-collapsed .sidebar-brand-text,
+body.sidebar-collapsed .sidebar-profile-info,
+body.sidebar-collapsed .sidebar-section-title,
+body.sidebar-collapsed .sidebar-link-content,
+body.sidebar-collapsed .sidebar-logout span,
+body.sidebar-collapsed .sidebar-footer-label {
+    display: none;
+}
+
+.sidebar-collapse-btn i {
+    transition: transform .25s ease;
+}
+
+body.sidebar-collapsed .sidebar-collapse-btn i {
+    transform: rotate(180deg);
+}
+
+body.sidebar-collapsed .sidebar-profile {
+    justify-content: center;
+    padding: 10px 0;
+    margin: 18px 10px 25px;
+    border-color: transparent;
+    background: transparent;
+}
+
+body.sidebar-collapsed .sidebar-menu {
+    padding: 0 10px 20px;
+}
+
+body.sidebar-collapsed .sidebar-link {
+    justify-content: center;
+    padding: 6px;
+}
+
+body.sidebar-collapsed .sidebar-link:hover {
+    transform: none;
+}
+
+body.sidebar-collapsed .sidebar-link-icon {
+    width: 42px;
+    height: 42px;
+}
+
+body.sidebar-collapsed .sidebar-link.active::before {
+    left: -10px;
+}
+
+body.sidebar-collapsed .sidebar-logout {
+    justify-content: center;
+    padding: 8px 0;
+}
+
+body.sidebar-collapsed .sidebar-logout i {
+    width: 42px;
+}
+
+/* MAIN CONTENT ADJUSTMENT */
+.body-wrapper {
+    position: relative;
+    box-sizing: border-box;
+
+    width: auto !important;
+    min-height: 100vh;
+
+    margin-left: var(--bs-sidebar-width) !important;
+
+    transition: margin-left .28s ease;
+}
+
+/* Sidebar collapsed */
+body.sidebar-collapsed .body-wrapper {
+    margin-left: var(--bs-sidebar-collapsed) !important;
+}
+
+/* TOOLTIP FOR COLLAPSED MENU */
+
+.sidebar-link[data-tooltip] {
+    position: relative;
+}
+
+body.sidebar-collapsed .sidebar-link:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+
+    padding: 8px 12px;
+    color: #FFFFFF;
+    background: #243B53;
+
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    border-radius: 7px;
+
+    z-index: 1100;
+    box-shadow: 0 5px 15px rgba(0,0,0,.12);
+    pointer-events: none;
+}
+
+/* MOBILE */
+
+.sidebar-overlay {
+    display: none;
+}
+
+@media (max-width: 1199px) {
+
+    .app-sidebar {
+        width: var(--bs-sidebar-width);
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+
+    .app-sidebar.show {
+        transform: translateX(0);
+        box-shadow: 10px 0 35px rgba(15, 23, 42, .12);
+    }
+
+    .sidebar-collapse-btn {
+        display: none;
+    }
+
+    .sidebar-close {
+        display: flex;
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1040;
+        background: rgba(25, 42, 62, .38);
+        backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.show {
+        display: block;
+    }
+
+    .body-wrapper,
+    body.sidebar-collapsed .body-wrapper {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    body.sidebar-collapsed .app-sidebar {
+        width: var(--bs-sidebar-width);
+    }
+
+    body.sidebar-collapsed .sidebar-brand {
+        justify-content: space-between;
+        padding: 20px;
+    }
+
+    body.sidebar-collapsed .sidebar-brand-text,
+    body.sidebar-collapsed .sidebar-profile-info,
+    body.sidebar-collapsed .sidebar-section-title,
+    body.sidebar-collapsed .sidebar-link-content,
+    body.sidebar-collapsed .sidebar-logout span {
+        display: block;
+    }
+
+    body.sidebar-collapsed .sidebar-profile {
+        justify-content: flex-start;
+        padding: 13px;
+        margin: 20px 15px 25px;
+        background: linear-gradient(120deg, #F4F8FC, #F8FAFD);
+        border-color: #EDF2F7;
+    }
+
+    body.sidebar-collapsed .sidebar-menu {
+        padding: 0 15px 20px;
+    }
+
+    body.sidebar-collapsed .sidebar-link {
+        justify-content: flex-start;
+        padding: 8px 11px;
+    }
+
+    body.sidebar-collapsed .sidebar-link-icon {
+        width: 34px;
+        height: 34px;
+    }
+
+    body.sidebar-collapsed .sidebar-logout {
+        justify-content: flex-start;
+        padding: 8px 11px;
+    }
+
+    body.sidebar-collapsed .sidebar-logout i {
+        width: 34px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-sidebar,
+    .sidebar-link,
+    .sidebar-link-icon,
+    .sidebar-profile {
+        transition: none !important;
+    }
+}
 </style>
 
-<!-- SIDEBAR -->
-<aside class="left-sidebar">
-    <div>
-        <div class="brand-logo">
-            <a href="<?= base_url('dashboard'); ?>" class="logo-img">
-                <img src="<?= base_url('assets/frontend/img/pav-logo.png'); ?>" alt="PT Pygmalion Artha Victory">
-            </a>
-            <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-                <i class="ti ti-x fs-6"></i>
+
+<aside class="app-sidebar" id="appSidebar">
+
+    <!-- BRAND -->
+    <div class="sidebar-brand">
+
+        <div class="sidebar-brand-content">
+            <div class="sidebar-brand-logo">
+                <i class="bi bi-grid-1x2-fill"></i>
+            </div>
+
+            <div class="sidebar-brand-text">
+                <h5 class="sidebar-brand-title">BROILER SYSTEM</h5>
+                <div class="sidebar-brand-subtitle">
+                    MANAGEMENT PLATFORM
+                </div>
             </div>
         </div>
 
-        <?php
-        $userName = $this->session->userdata('name') ?: 'Administrator';
-        $username = $this->session->userdata('username') ?: 'admin';
-        $nameParts = preg_split('/\s+/', trim($userName));
-        $initials = '';
-        if (!empty($nameParts[0])) $initials .= strtoupper(substr($nameParts[0], 0, 1));
-        if (count($nameParts) > 1 && !empty($nameParts[count($nameParts)-1])) $initials .= strtoupper(substr($nameParts[count($nameParts)-1], 0, 1));
-        if ($initials === '') $initials = 'AD';
-        $currentUri = trim($this->uri->uri_string(), '/');
+        <button type="button"
+                class="sidebar-collapse-btn"
+                id="sidebarCollapseToggle"
+                title="Collapse sidebar">
+            <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
 
-        $dashboardActive = (
-            $currentUri === 'dashboard' ||
-            $currentUri === ''
-        );
+        <button type="button"
+                class="sidebar-close"
+                id="sidebarClose"
+                title="Close sidebar">
+            <i class="bi bi-x-lg"></i>
+        </button>
 
-        $codeActive = (strpos($currentUri, 'code') === 0);
-        $customerActive = (strpos($currentUri, 'customer') === 0);
-        $materialActive = (strpos($currentUri, 'material') === 0);
-        $masterSalesActive = (strpos($currentUri, 'master_sales') === 0);
+    </div>
 
-        $orderApprovalActive = (
-            strpos($currentUri, 'order/approval') === 0
-        );
 
-        $orderActive = (
-            strpos($currentUri, 'order') === 0 &&
-            !$orderApprovalActive
-        );
+    <!-- USER PROFILE -->
+    <div class="sidebar-profile">
 
-        $poActive = (strpos($currentUri, 'po') === 0);
-
-        $creditNoteApprovalActive = (strpos($currentUri, 'credit_note/approval') === 0);
-
-        $creditNoteActive = (
-            strpos($currentUri, 'credit_note') === 0 &&
-            !$creditNoteApprovalActive
-        );
-
-        $username = strtolower(trim(
-            (string) $this->session->userdata('username')
-        ));
-
-        $isOrderApprover = in_array($username, [
-            'pavamir',
-            'pavthomas'
-        ], TRUE);
-
-        $paymentActive = (strpos($currentUri, 'payment') === 0);
-        $cashinActive = (strpos($currentUri, 'cashin') === 0);
-        $reportorderActive = (strpos($currentUri, 'reportorder') === 0);
-        $reportcreditnoteActive = (strpos($currentUri, 'reportcreditnote') === 0);
-        $reportcashinActive = (strpos($currentUri, 'reportcashin') === 0);
-        $reportpaymentActive = (strpos($currentUri, 'reportpayment') === 0);
-        $reportcustomeragingActive = $this->uri->segment(1) == 'reportcustomeraging';
-        $reportcustomeroverdueActive = $this->uri->segment(1) == 'reportcustomeroverdue';
-        ?>
-
-        <div class="sidebar-profile">
-            <div class="sidebar-profile__avatar"><?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8'); ?></div>
-            <div class="sidebar-profile__info">
-                <p class="sidebar-profile__name"><?= htmlspecialchars(strtoupper($userName), ENT_QUOTES, 'UTF-8'); ?></p>
-                <p class="sidebar-profile__username"><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?></p>
-            </div>
+        <div class="sidebar-avatar">
+            <?= html_escape($initials); ?>
+            <span class="sidebar-avatar-status"></span>
         </div>
 
-        <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
-            <ul id="sidebarnav">
-                <!-- <li class="sidebar-section-title">Main</li> -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('dashboard'); ?>" class="sidebar-link <?= $dashboardActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon"><i class="ti ti-layout-dashboard"></i></span>
-                        <span class="hide-menu">Dashboard</span>
-                    </a>
-                </li>
+        <div class="sidebar-profile-info">
+            <p class="sidebar-profile-name">
+                <?= html_escape($full_name); ?>
+            </p>
 
-                <li class="sidebar-section-title">Master Data</li>
-                <li class="sidebar-item">
-                    <a href="<?= base_url('code'); ?>" class="sidebar-link <?= $codeActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon"><i class="ti ti-building"></i></span>
-                        <span class="hide-menu">General Code</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="<?= base_url('customer'); ?>" class="sidebar-link <?= $customerActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon"><i class="ti ti-building"></i></span>
-                        <span class="hide-menu">Customer / Supplier</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="<?= base_url('master_sales'); ?>"
-                    class="sidebar-link <?= $masterSalesActive ? 'active' : ''; ?>">
+            <p class="sidebar-profile-user">
+                <?= html_escape($user_nm); ?>
+            </p>
+        </div>
 
-                        <span class="sidebar-icon">
-                            <i class="ti ti-users"></i>
-                        </span>
+    </div>
 
-                        <span class="hide-menu">Master Sales</span>
-                    </a>
-                </li>
 
-                <li class="sidebar-item">
-                    <a href="<?= base_url('material'); ?>" class="sidebar-link <?= $materialActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon"><i class="ti ti-building"></i></span>
-                        <span class="hide-menu">Material</span>
-                    </a>
-                </li>
+    <!-- NAVIGATION -->
+    <div class="sidebar-menu">
 
-                <li class="sidebar-section-title">Transaksi</li>
+        <div class="sidebar-section-title">
+            WORKSPACE
+        </div>
 
-                <!-- ORDER -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('order'); ?>"
-                    class="sidebar-link <?= $orderActive ? 'active' : ''; ?>">
+        <?php foreach ($menu_items as $item): ?>
 
-                        <span class="sidebar-icon">
-                            <i class="ti ti-shopping-cart"></i>
-                        </span>
+            <?php
+                $is_active = ($current_page === $item['key']);
+            ?>
 
-                        <span class="hide-menu">Order</span>
-                    </a>
-                </li>
+            <a href="<?= base_url($item['url']); ?>"
+               class="sidebar-link <?= $is_active ? 'active' : ''; ?>"
+               data-tooltip="<?= html_escape($item['title']); ?>"
+               title="<?= html_escape($item['title']); ?>">
 
-                <!-- CREDIT NOTE -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('credit_note'); ?>"
-                    class="sidebar-link <?= $creditNoteActive ? 'active' : ''; ?>">
+                <div class="sidebar-link-icon">
+                    <i class="bi <?= $item['icon']; ?>"></i>
+                </div>
 
-                        <span class="sidebar-icon">
-                            <i class="ti ti-file-invoice"></i>
-                        </span>
+                <div class="sidebar-link-content">
+                    <span class="sidebar-link-title">
+                        <?= html_escape($item['title']); ?>
+                    </span>
 
-                        <span class="hide-menu">Credit Note</span>
-                    </a>
-                </li>
+                    <span class="sidebar-link-desc">
+                        <?= html_escape($item['desc']); ?>
+                    </span>
+                </div>
 
-                <!-- APPROVAL ORDER -->
-                <?php if ($isOrderApprover): ?>
-
-                <li class="sidebar-item">
-                    <a href="<?= base_url('order/approval_index'); ?>"
-                    class="sidebar-link <?= $orderApprovalActive ? 'active' : ''; ?>">
-
-                        <span class="sidebar-icon">
-                            <i class="ti ti-clipboard-check"></i>
-                        </span>
-
-                        <span class="hide-menu">Approval Order</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-item">
-                    <a href="<?= base_url('credit_note/approval'); ?>"
-                    class="sidebar-link <?= $creditNoteApprovalActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon">
-                            <i class="ti ti-clipboard-check"></i>
-                        </span>
-                        <span class="hide-menu">Approval Credit Note</span>
-                    </a>
-                </li>
-
+                <?php if ($is_active): ?>
+                    <i class="bi bi-chevron-right"
+                       style="font-size: 11px; opacity: .65;"></i>
                 <?php endif; ?>
 
-                <li class="sidebar-section-title">Accounting</li>
-
-                <!-- PAYMENT -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('payment'); ?>"
-                    class="sidebar-link <?= $paymentActive ? 'active' : ''; ?>">
-
-                        <span class="sidebar-icon">
-                            <i class="ti ti-cash"></i>
-                        </span>
-
-                        <span class="hide-menu">Payment Supplier</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-item">
-                    <a href="<?= base_url('cashin'); ?>"
-                    class="sidebar-link <?= $cashinActive ? 'active' : ''; ?>">
-
-                        <span class="sidebar-icon">
-                            <i class="ti ti-cash"></i>
-                        </span>
-
-                        <span class="hide-menu">Cash In Customer</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-section-title">Report</li>
-
-                <!-- REPORT ORDER -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('reportorder'); ?>"
-                    class="sidebar-link <?= $reportorderActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon">
-                            <i class="ti ti-shopping-cart"></i>
-                        </span>
-                        <span class="hide-menu">Order Report</span>
-                    </a>
-                </li>
-
-                <!-- REPORT CREDIT NOTE -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('reportcreditnote'); ?>"
-                    class="sidebar-link <?= $reportcreditnoteActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon">
-                            <i class="ti ti-file-invoice"></i>
-                        </span>
-                        <span class="hide-menu">Credit Note Report</span>
-                    </a>
-                </li>
-
-                <!-- REPORT CASH IN -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('reportcashin'); ?>"
-                    class="sidebar-link <?= $reportcashinActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon">
-                            <i class="ti ti-cash"></i>
-                        </span>
-                        <span class="hide-menu">Cash In Report</span>
-                    </a>
-                </li>
-
-                <!-- REPORT PAYMENT -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('reportpayment'); ?>"
-                    class="sidebar-link <?= $reportpaymentActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon">
-                            <i class="ti ti-credit-card"></i>
-                        </span>
-                        <span class="hide-menu">Payment Report</span>
-                    </a>
-                </li>
-
-                <!-- REPORT CUSTOMER AGING -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('reportcustomeraging'); ?>"
-                    class="sidebar-link <?= $reportcustomeragingActive ? 'active' : ''; ?>">
-                        <span class="sidebar-icon">
-                            <i class="ti ti-chart-bar"></i>
-                        </span>
-                        <span class="hide-menu">Customer Aging Report</span>
-                    </a>
-                </li>
-
-                <!-- REPORT CUSTOMER OVERDUE -->
-                <li class="sidebar-item">
-                    <a href="<?= base_url('reportcustomeroverdue'); ?>"
-                    class="sidebar-link <?= $reportcustomeroverdueActive ? 'active' : ''; ?>">
-
-                        <span class="sidebar-icon">
-                            <i class="ti ti-alert-triangle"></i>
-                        </span>
-
-                        <span class="hide-menu">Customer Overdue Report</span>
-                    </a>
-                </li>
-
-            </ul>
-        </nav>
-
-        <div class="sidebar-bottom">
-            <a href="<?= base_url('auth/logout'); ?>" class="sidebar-logout">
-                <i class="ti ti-logout"></i><span>Logout</span>
             </a>
-        </div>
+
+        <?php endforeach; ?>
+
     </div>
+
+
+    <!-- FOOTER -->
+    <div class="sidebar-footer">
+
+        <a href="<?= base_url('auth/logout'); ?>"
+           class="sidebar-logout"
+           onclick="return confirm('Are you sure you want to logout?');">
+
+            <i class="bi bi-box-arrow-left"></i>
+            <span>Sign Out</span>
+
+        </a>
+
+        <div class="sidebar-footer-label">
+            Broiler System &copy; <?= date('Y'); ?>
+        </div>
+
+    </div>
+
 </aside>
 
-<!-- BODY WRAPPER + HEADER -->
-<div class="body-wrapper">
-    <header class="app-header">
-        <nav class="navbar navbar-expand-lg navbar-light">
-            <ul class="navbar-nav">
-                <li class="nav-item d-block d-xl-none">
-                    <a class="nav-link nav-icon-hover sidebartoggler" id="headerCollapse" href="javascript:void(0)">
-                        <i class="ti ti-menu-2"></i>
-                    </a>
-                </li>
-            </ul>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-            <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
-                <ul class="navbar-nav flex-row ms-auto align-items-center">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="header-profile">
-                                <div class="header-profile__avatar"><?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8'); ?></div>
-                                <span class="header-profile__name"><?= htmlspecialchars(strtoupper($userName), ENT_QUOTES, 'UTF-8'); ?></span>
-                                <i class="ti ti-chevron-down"></i>
-                            </div>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end header-profile-menu" aria-labelledby="drop2">
-                            <div class="px-3 py-2">
-                                <div class="fw-bold"><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8'); ?></div>
-                                <small class="text-muted"><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?></small>
-                            </div>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="<?= base_url('users/profile'); ?>"><i class="ti ti-user me-2"></i>My Profile</a>
-                            <a class="dropdown-item" href="<?= base_url('auth/logout'); ?>"><i class="ti ti-logout me-2"></i>Logout</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+<div class="body-wrapper">
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    const openButton = document.getElementById('sidebarToggle');
+    const closeButton = document.getElementById('sidebarClose');
+    const collapseButton = document.getElementById('sidebarCollapseToggle');
+
+    if (!sidebar || !overlay) return;
+
+    const mobileQuery = window.matchMedia('(max-width: 1199px)');
+
+    // MOBILE SIDEBAR
+    function openSidebar() {
+        sidebar.classList.add('show');
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    // DESKTOP COLLAPSE
+    function toggleCollapse() {
+        if (mobileQuery.matches) return;
+
+        const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+
+        try {
+            localStorage.setItem(
+                'broiler_sidebar_collapsed',
+                isCollapsed ? '1' : '0'
+            );
+        } catch (e) {}
+
+    }
+
+    // RESTORE SIDEBAR STATE
+    if (!mobileQuery.matches) {
+        try {
+            if (localStorage.getItem('broiler_sidebar_collapsed') === '1') {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        } catch (e) {}
+    }
+
+    // EVENT LISTENERS
+    if (openButton) {
+        openButton.addEventListener('click', openSidebar);
+    }
+
+    if (closeButton) {
+        closeButton.addEventListener('click', closeSidebar);
+    }
+
+    if (collapseButton) {
+        collapseButton.addEventListener('click', toggleCollapse);
+    }
+
+    overlay.addEventListener('click', closeSidebar);
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeSidebar();
+        }
+    });
+
+    // RESET MOBILE STATE WHEN RESIZING TO DESKTOP
+    mobileQuery.addEventListener('change', function (event) {
+        closeSidebar();
+
+        if (event.matches) {
+            document.body.classList.remove('sidebar-collapsed');
+        } else {
+            try {
+                if (localStorage.getItem('broiler_sidebar_collapsed') === '1') {
+                    document.body.classList.add('sidebar-collapsed');
+                }
+            } catch (e) {}
+        }
+    });
+
+});
+</script>

@@ -4,18 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
-        rel="icon"
-        type="image/png"
-        href="<?= base_url('assets/frontend/img/pav-logo.png'); ?>"
-    >
 
-    <link
-        rel="apple-touch-icon"
-        href="<?= base_url('assets/frontend/img/pav-logo.png'); ?>"
-    >
-
-    <title>PT PYGMALION ARTHA VICTORY | Login</title>
+    <title>Broiler System | Home</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -26,40 +16,52 @@
         }
 
         :root {
-            --pav-orange: #f59a23;
-            --pav-gold: #ffc65c;
-            --pav-dark: #111111;
-            --pav-muted: #a6a6a6;
+            --primary: #3976AD;
+            --primary-hover: #2F6596;
+
+            --red: #D62828;
+            --red-light: #FFF1F1;
+
+            --text: #334E68;
+            --muted: #64748B;
+
+            --border: #E2E8F0;
+            --background: #F5F8FC;
         }
 
         body {
             margin: 0;
             min-height: 100vh;
             font-family: Arial, Helvetica, sans-serif;
-            background: var(--pav-dark);
-            color: #ffffff;
+            color: var(--text);
+            background: #FFFFFF;
         }
+
+        /* =====================================
+           HOME PAGE
+        ===================================== */
 
         .home-page {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 30px 20px;
+            padding: 40px 20px;
             position: relative;
             overflow: hidden;
             isolation: isolate;
+
             background:
                 radial-gradient(
                     ellipse at 50% 45%,
-                    rgba(245, 154, 35, 0.10) 0%,
-                    rgba(245, 154, 35, 0.025) 35%,
-                    transparent 68%
+                    rgba(16, 42, 67, 0.035) 0%,
+                    transparent 65%
                 ),
-                #111111;
+                #FFFFFF;
         }
 
-        /* Decorative orange accents */
+        /* Decorative elements */
+
         .home-page::before,
         .home-page::after {
             content: "";
@@ -72,155 +74,210 @@
         .home-page::before {
             width: 520px;
             height: 520px;
-            top: -360px;
-            right: -140px;
-            border: 1px solid rgba(245, 154, 35, 0.25);
+            top: -390px;
+            right: -150px;
+
+            border: 1px solid rgba(16, 42, 67, 0.10);
+
             box-shadow:
-                0 0 0 45px rgba(245, 154, 35, 0.025),
-                0 0 0 90px rgba(245, 154, 35, 0.02);
+                0 0 0 45px rgba(16, 42, 67, 0.025),
+                0 0 0 90px rgba(16, 42, 67, 0.018);
         }
 
         .home-page::after {
             width: 450px;
             height: 450px;
-            bottom: -350px;
+            bottom: -360px;
             left: -150px;
-            border: 1px solid rgba(245, 154, 35, 0.2);
+
+            border: 1px solid rgba(214, 40, 40, 0.12);
+
             box-shadow:
-                0 0 0 40px rgba(245, 154, 35, 0.025),
-                0 0 0 80px rgba(245, 154, 35, 0.02);
+                0 0 0 40px rgba(214, 40, 40, 0.025),
+                0 0 0 80px rgba(214, 40, 40, 0.018);
         }
+
+        /* =====================================
+           CONTENT CARD
+        ===================================== */
 
         .home-content {
             width: 100%;
             max-width: 680px;
+
             text-align: center;
-            padding: 54px 48px 44px;
-            border: 1px solid rgba(255, 190, 90, 0.18);
-            border-radius: 24px;
-            background: rgba(24, 24, 24, 0.88);
+            padding: 55px 55px 40px;
+
+            background: #FFFFFF;
+
+            border: 1px solid var(--border);
+            border-radius: 20px;
+
             box-shadow:
-                0 25px 80px rgba(0, 0, 0, 0.35),
-                inset 0 1px 0 rgba(255, 255, 255, 0.025);
-            animation: fadeIn 0.8s ease both;
+                0 20px 60px rgba(16, 42, 67, 0.07),
+                0 2px 8px rgba(16, 42, 67, 0.025);
+
+            animation: fadeIn 0.7s ease both;
         }
+
+        /* =====================================
+           LOGO
+        ===================================== */
 
         .logo-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 36px;
+            margin-bottom: 35px;
         }
 
-        .home-logo {
-            display: block;
-            width: 100%;
-            max-width: 440px;
-            height: auto;
-            object-fit: contain;
+        .logo-placeholder {
+            width: 190px;
+            height: 110px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+
+            background: #F8FAFC;
+            border: 1px dashed #CBD5E1;
+            border-radius: 12px;
+
+            color: #94A3B8;
         }
+
+        .logo-placeholder svg {
+            width: 34px;
+            height: 34px;
+        }
+
+        .logo-placeholder span {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        /* =====================================
+           TEXT CONTENT
+        ===================================== */
 
         .company-label {
-            color: var(--pav-orange);
+            color: var(--red);
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 4px;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 13px;
         }
 
         .company-name {
-            color: #ffffff;
-            font-size: clamp(23px, 4vw, 32px);
-            font-weight: 700;
-            line-height: 1.35;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: clamp(25px, 4vw, 34px);
+            font-weight: 800;
+            line-height: 1.3;
+            letter-spacing: 0.5px;
+            margin-bottom: 18px;
+        }
+
+        .red-divider {
+            width: 58px;
+            height: 3px;
+            margin: 0 auto 27px;
+            border-radius: 10px;
+            background: var(--red);
         }
 
         .company-description {
-            max-width: 440px;
-            margin: 0 auto 34px;
-            color: var(--pav-muted);
+            max-width: 430px;
+            margin: 0 auto 35px;
+
+            color: var(--muted);
             font-size: 14px;
             line-height: 1.8;
         }
 
-        .gold-divider {
-            width: 65px;
-            height: 3px;
-            margin: 0 auto 30px;
-            border-radius: 10px;
-            background: linear-gradient(
-                90deg,
-                var(--pav-orange),
-                var(--pav-gold)
-            );
-        }
+        /* =====================================
+           LOGIN BUTTON
+        ===================================== */
 
         .btn-login {
             width: 100%;
             max-width: 340px;
-            min-height: 58px;
+            min-height: 56px;
+
             margin: 0 auto;
             padding: 15px 24px;
+
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
 
-            color: #17110a;
-            background: linear-gradient(
-                110deg,
-                #e88a16 0%,
-                #ffbd4a 52%,
-                #f39a20 100%
-            );
+            color: #FFFFFF;
+            background: var(--primary);
 
-            border: 1px solid rgba(255, 220, 150, 0.65);
+            border: 1px solid var(--primary);
             border-radius: 9px;
-            font-size: 16px;
+
+            font-size: 14px;
             font-weight: 700;
             letter-spacing: 1px;
             text-decoration: none;
 
-            box-shadow: 0 8px 25px rgba(245, 154, 35, 0.13);
+            box-shadow: 0 7px 18px rgba(16, 42, 67, 0.13);
+
             transition:
                 transform 0.25s ease,
                 box-shadow 0.25s ease,
-                filter 0.25s ease;
+                background 0.25s ease;
         }
 
         .btn-login:hover {
-            color: #111111;
-            filter: brightness(1.08);
+            color: #FFFFFF;
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+
             transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(245, 154, 35, 0.25);
+
+            box-shadow: 0 11px 25px rgba(16, 42, 67, 0.20);
         }
 
         .btn-login:focus-visible {
-            outline: 3px solid #ffffff;
+            outline: 3px solid var(--red);
             outline-offset: 4px;
         }
 
         .login-icon {
-            width: 21px;
-            height: 21px;
+            width: 20px;
+            height: 20px;
             flex-shrink: 0;
         }
 
+        /* =====================================
+           FOOTER
+        ===================================== */
+
         .home-footer {
-            margin-top: 38px;
+            margin-top: 40px;
             padding-top: 22px;
-            border-top: 1px solid rgba(255, 255, 255, 0.07);
-            color: #737373;
+
+            border-top: 1px solid #EDF1F5;
+
+            color: #94A3B8;
             font-size: 11px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
 
         .home-footer span {
-            color: var(--pav-orange);
+            color: var(--primary);
+            font-weight: 700;
         }
+
+        /* =====================================
+           ANIMATION
+        ===================================== */
 
         @keyframes fadeIn {
             from {
@@ -234,18 +291,24 @@
             }
         }
 
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
         @media (max-width: 576px) {
+
             .home-page {
                 padding: 20px 16px;
             }
 
             .home-content {
                 padding: 42px 24px 28px;
-                border-radius: 18px;
+                border-radius: 16px;
             }
 
-            .home-logo {
-                max-width: 330px;
+            .logo-placeholder {
+                width: 160px;
+                height: 95px;
             }
 
             .logo-wrapper {
@@ -258,7 +321,7 @@
             }
 
             .company-name {
-                letter-spacing: 0.5px;
+                font-size: 25px;
             }
 
             .company-description {
@@ -267,6 +330,7 @@
 
             .home-footer {
                 margin-top: 30px;
+                line-height: 1.8;
             }
         }
 
@@ -278,6 +342,7 @@
                 transition: none !important;
             }
         }
+
     </style>
 </head>
 
@@ -287,32 +352,51 @@
 
     <section class="home-content">
 
-        <!-- PAV Logo -->
+        <!-- LOGO PLACEHOLDER -->
         <div class="logo-wrapper">
-            <img
-                src="<?= base_url('assets/frontend/img/pav-logo.png'); ?>"
-                alt="Logo PAV - PT Pygmalion Artha Victory"
-                class="home-logo"
-            >
+
+            <div class="logo-placeholder">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.5"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <rect x="3" y="3" width="18" height="18" rx="3"/>
+                    <circle cx="12" cy="10" r="3"/>
+                    <path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/>
+
+                </svg>
+
+                <span>YOUR LOGO HERE</span>
+
+            </div>
+
         </div>
+
+        <!-- COMPANY INFORMATION -->
 
         <div class="company-label">
             Welcome to
         </div>
 
         <h1 class="company-name">
-            PT PYGMALION ARTHA VICTORY
+            BROILER SYSTEM
         </h1>
 
-        <div class="gold-divider"></div>
+        <div class="red-divider"></div>
 
         <p class="company-description">
-            Welcome to the official platform of
-            PT Pygmalion Artha Victory.
-            Please log in to continue to the system.
+            Welcome to the Broiler Management System.
+
+            Manage and monitor your broiler farming
+            operations through one integrated platform.
         </p>
 
-        <!-- Login Button -->
+        <!-- LOGIN BUTTON -->
+
         <a href="<?= site_url('login'); ?>" class="btn-login">
 
             <svg class="login-icon"
@@ -334,10 +418,16 @@
 
         </a>
 
+        <!-- FOOTER -->
+
         <footer class="home-footer">
+
             &copy; <?= date('Y'); ?>
-            <span>PT PYGMALION ARTHA VICTORY</span>.
+
+            <span>BROILER SYSTEM</span>.
+
             All rights reserved.
+
         </footer>
 
     </section>

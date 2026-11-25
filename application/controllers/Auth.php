@@ -100,6 +100,13 @@ class Auth extends CI_Controller {
         return redirect('dashboard');
     }
 
+    public function migrate_password()
+    {
+        $this->Auth_model->migrate_existing_password();
+
+        echo 'Password migration completed!';
+    }
+
     public function logout()
     {
         $this->session->sess_destroy();
